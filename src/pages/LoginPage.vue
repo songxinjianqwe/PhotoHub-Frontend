@@ -27,83 +27,93 @@
 
 <script>
 export default {
-    data() {
-        return {
-            loginForm: {
-                username: '',
-                password: '',
-                captchaValue: '',
-                captchaCode: '',
-                userMode: 'USERNAME'
-            },
-            image: '',
-            errors: []
-        }
+  data() {
+    return {
+      loginForm: {
+        username: "",
+        password: "",
+        captchaValue: "",
+        captchaCode: "",
+        userMode: "USERNAME"
+      },
+      image: "",
+      errors: []
+    };
+  },
+  methods: {
+    fetchCaptcha() {
+      this.axios
+        .get("/captchas")
+        .then(response => {
+          console.log(response.data);
+          this.image = response.data.image;
+          this.loginForm.captchaCode = response.data.captchaCode;
+        })
+        .catch(error => {
+          throw error;
+        });
     },
-    methods: {
-        fetchCaptcha() {
-            this.axios.get("/captchas").then((response) => {
-                console.log(response.data)
-                this.image = response.data.image
-                this.loginForm.captchaCode = response.data.captchaCode
-            }).catch((error) => {
-                throw error
-            })
-        },
-        submitForm() {
-            this.errorText = ''
-            console.log(this.loginForm)
-            this.axios.post("/tokens", this.loginForm).then((response) => {
-                console.log("登录成功")
-                console.log(response.data)
-                //清空表单
-                this.resetForm()
-                //发出成功提示
-                const h = this.$createElement;
-                this.$notify({
-                    title: '登录成功',
-                    message: h('i', { style: 'color: teal' }, '欢迎您，' + response.data.username)
-                });
-                localStorage.setItem('loginResult', JSON.stringify(response.data))
-                //跳转回主页
-                this.$router.push('/')
-                //刷新当前页面
-                window.location.reload()
-            }).catch((error) => {
-                this.fetchCaptcha()
-                this.loginForm.captchaValue = ''
-                console.log(error)
-                if ("response" in error) {
-                    this.errors = error.response.data.fieldErrors
-                }
-            })
-        },
-        resetForm() {
-            this.$refs['loginForm'].resetFields()
-        },
-        forgetPassword() {
-            this.resetForm()
-            this.$router.push('/forget_password')
-        }
+    submitForm() {
+      this.errorText = "";
+      console.log(this.loginForm);
+      this.axios
+        .post("/tokens", this.loginForm)
+        .then(response => {
+          console.log("登录成功");
+          console.log(response.data);
+          //清空表单
+          this.resetForm();
+          //发出成功提示
+          const h = this.$createElement;
+          this.$notify({
+            title: "登录成功",
+            message: h(
+              "i",
+              { style: "color: teal" },
+              "欢迎您，" + response.data.username
+            )
+          });
+          localStorage.setItem("loginResult", JSON.stringify(response.data));
+          //跳转回主页
+          this.$router.push("/");
+          //刷新当前页面
+          window.location.reload();
+        })
+        .catch(error => {
+          this.fetchCaptcha();
+          this.loginForm.captchaValue = "";
+          console.log(error);
+          if ("response" in error) {
+            this.errors = error.response.data.fieldErrors;
+          }
+        });
     },
-    created() {
-        // 调用methods里的方法必须用this.
-        this.fetchCaptcha()
+    resetForm() {
+      this.$refs["loginForm"].resetFields();
+    },
+    forgetPassword() {
+      this.resetForm();
+      this.$router.push("/forget_password");
     }
-}
+  },
+  created() {
+    // 调用methods里的方法必须用this.
+    this.fetchCaptcha();
+  }
+};
 </script>
 
 <style scoped>
 .item {
-    text-align: center
+  text-align: center;
 }
 
 .login {
-    width: 30%;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
+  width: 30%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
