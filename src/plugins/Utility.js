@@ -23,6 +23,7 @@ exports.install = function (Vue, options) {
         },
         Vue.prototype.DEFAULT_DATE_TIME_FORMAT = 'yyyy-MM-dd hh:mm:ss',
         Vue.prototype.DEFAULT_DATE_FORMAT = 'yyyy-MM-dd',
+        Vue.prototype.DEFAULE_PER_PAGE = 5,
         Vue.prototype.base64ToBinary = function (dataUrl) {
             let arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);

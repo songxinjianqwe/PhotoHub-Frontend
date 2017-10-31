@@ -7,17 +7,19 @@
         <router-link to="/" class="logo">
           <h1>PhotoHub</h1>
         </router-link>
+        
         <!-- 导航条 -->
         <div class="header-nav">
-          <el-menu  class="nav-menu" :default-active="$route.path" theme="dark" :router="true" mode="horizontal">
+          <el-menu  class="nav-menu" :default-active="$route.path" theme="dark" :router="true" mode="horizontal" >
             <el-menu-item index="/">首页</el-menu-item>
             <el-menu-item :index="'/users/'+loginResult.id+'/index'">主页</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/album'">相册</el-menu-item>
+            <el-menu-item :index="'/users/'+loginResult.id+'/moments'">动态</el-menu-item>
+            <el-menu-item :index="'/users/'+loginResult.id+'/albums'">相册</el-menu-item>
             <el-menu-item index="/activities">活动</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/follow'">关注</el-menu-item>
+            <el-menu-item :index="'/users/'+loginResult.id+'/follows'">关注</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
-            <el-submenu>
-              <template slot="title">
+            <el-submenu :index="'/users/'+loginResult.id">
+              <template slot="title" >
                 更多
               </template>
               <el-menu-item :index="'/users/'+loginResult.id+'/info'">账号设置</el-menu-item>
@@ -31,7 +33,7 @@
     <div class="app-content">
       <!-- 缓存 -->
       <keep-alive>
-        <router-view></router-view>
+        <router-view :loginResult="loginResult" :isLogin="isLogin"></router-view>
       </keep-alive>
     </div>
 
@@ -53,7 +55,6 @@ export default {
         username: ""
       },
       logoutDialogVisible: false,
-      mailCount: 0
     };
   },
 
@@ -65,7 +66,6 @@ export default {
         this.loginResult = JSON.parse(localStorage.getItem("loginResult"));
         console.log("isLogin:", this.isLogin);
         console.log("loginResult:", this.loginResult);
-        this.getMails();
       } else {
         console.log("localStorage为空");
       }
@@ -104,38 +104,9 @@ export default {
         });
       //回到首页
       this.$router.push("/");
-    },
-
-    getMails() {
-      let params = {
-        target: "receiver",
-        mail_status: "NOT_VIEWED"
-      };
-
-      let header = {
-        Authentication: this.loginResult.token
-      };
-
-      //获取未读站内信数
-
-      this.axios
-        .get("/mails/by_target/" + this.loginResult.id + "/size", {
-          params: params,
-          headers: header
-        })
-        .then(response => {
-          this.mailCount = response.data;
-          console.log("mailCount:", this.mailCount);
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        });
     }
   },
-
   // 当刷新时，检查localStorage，如果有用户数据，说明仍在登录状态
-
   created() {
     this.checkLoginState();
   }
@@ -148,7 +119,7 @@ html {
 }
 
 body {
-  background: #f0f2f5;
+  background: #EDEDEF;
   font-size: 14px;
   color: #444;
   min-height: 100%;
@@ -160,11 +131,12 @@ body {
 /* header */
 
 .app-header {
-  background: #2C2924;
+  background: #2c2924;
   color: #b2b2b2;
   height: 82px;
   width: 100%;
   margin-bottom: 30px;
+  background-color: #324157;
 }
 
 .app-header-inner {
