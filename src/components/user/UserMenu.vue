@@ -3,9 +3,9 @@
       <router-link :to="'/users/'+loginResult.id+'/index'">
         <h2>{{loginResult.username}}</h2>
       </router-link>
-      <el-menu @open="handleOpen" background-color="#545c64">
+      <el-menu :default-active="$route.path" :router="true" background-color="#F3F3F3">
         <el-menu-item :index="'/users/'+loginResult.id+'/moments'">
-            <i class="el-icon-location"></i>
+            <i class="el-icon-document"></i>
             <span slot="title">动态</span>
         </el-menu-item>
         <el-menu-item :index="'/users/'+loginResult.id+'/albums'">
@@ -27,10 +27,6 @@ export default {
     return {};
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log("key", key);
-      console.log("keypath", keyPath);
-    }
   }
 };
 </script>

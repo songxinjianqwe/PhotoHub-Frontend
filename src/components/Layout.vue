@@ -7,10 +7,13 @@
         <router-link to="/" class="logo">
           <h1>PhotoHub</h1>
         </router-link>
-        
+
         <!-- 导航条 -->
         <div class="header-nav">
-          <el-menu  class="nav-menu" :default-active="$route.path" theme="dark" :router="true" mode="horizontal" >
+          <el-menu class="nav-menu" :default-active="$route.path" :router="true" mode="horizontal" 
+          background-color="#24292c"
+          text-color="#999"
+          active-text-color="#ffffff">
             <el-menu-item index="/">首页</el-menu-item>
             <el-menu-item :index="'/users/'+loginResult.id+'/index'">主页</el-menu-item>
             <el-menu-item :index="'/users/'+loginResult.id+'/moments'">动态</el-menu-item>
@@ -19,7 +22,7 @@
             <el-menu-item :index="'/users/'+loginResult.id+'/follows'">关注</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
             <el-submenu :index="'/users/'+loginResult.id">
-              <template slot="title" >
+              <template slot="title">
                 更多
               </template>
               <el-menu-item :index="'/users/'+loginResult.id+'/info'">账号设置</el-menu-item>
@@ -54,7 +57,7 @@ export default {
         token: "",
         username: ""
       },
-      logoutDialogVisible: false,
+      logoutDialogVisible: false
     };
   },
 
@@ -119,7 +122,7 @@ html {
 }
 
 body {
-  background: #EDEDEF;
+  background: #ededef;
   font-size: 14px;
   color: #444;
   min-height: 100%;
@@ -131,19 +134,18 @@ body {
 /* header */
 
 .app-header {
-  background: #2c2924;
-  color: #b2b2b2;
   height: 82px;
   width: 100%;
   margin-bottom: 30px;
-  background-color: #324157;
+  background-color: #24292c;
 }
-
 .app-header-inner {
   width: 1200px;
   margin: 0 auto;
 }
-
+.app-header-inner h1{
+  color: #ffffff
+}
 .logo {
   position: relative;
   float: left;
@@ -153,7 +155,6 @@ body {
 
 .header-nav {
   float: right;
-
   margin: 35px 0 0;
 }
 .nav-menu {
@@ -162,7 +163,7 @@ body {
   width: 580px;
   height: 47px;
   padding: 22px 5px 0 0;
-  margin: -25px 0 0;
+  margin: -36px 0 0;
   text-align: left;
 }
 /* content */

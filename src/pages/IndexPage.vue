@@ -7,8 +7,8 @@
         <!-- 发表 -->
         <div class="post-block">
           <ul class="post-nav">
-            <li class="el-icon-plus" @click="momentNewDialogVisible = true">发表动态</li>
-            <li class="el-icon-picture" @click="albumNewDialogVisible = true">创建相册</li>
+            <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
+            <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
           </ul>
         </div>
         <!-- 动态 -->
@@ -20,17 +20,21 @@
       <!-- 右侧 -->
       <div class="index-right">
         <div class="user-block">
-          <user-menu v-if="isLogin === true" :loginResult="loginResult"></user-menu>
+          <user-menu v-if="isLogin" :loginResult="loginResult"></user-menu>
           <login-form v-else></login-form>
         </div>
         <div class="top-moments">
+            <h2>热门标签</h2>
+            <ul>
+              <li v-for="tag in top10Tags.items" :key="tag.id">{{tag.name}}</li>
+            </ul>
         </div>
       </div>
     </div>
-
+    
     <!-- 新增动态Dialog -->
-    <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="30%" :before-close="handleDialogClose">
-      <message-new></message-new>
+    <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%" :before-close="handleDialogClose">
+      <message-new :loginResult="loginResult"></message-new>
     </el-dialog>
 
     <!-- 新增AlbumDialog -->
@@ -53,8 +57,9 @@ export default {
     return {
       momentNewDialogVisible: false,
       albumNewDialogVisible: false,
-      feed: [],
-      feedPage: 1
+      feed: {},
+      feedPage: 1,
+      top10Tags:{}
     };
   },
   methods: {
@@ -92,10 +97,20 @@ export default {
             throw error;
           });
       }
+    },
+    fetchTopTags(){
+      let params = { page: 1, per_page: 10 };
+      this.axios.get('/tags/hot',{params: params})
+      .then(response => {
+        this.top10Tags = response.data
+      }).catch(error => {
+        throw error
+      })
     }
   },
   created() {
     this.fetchFeed();
+    this.fetchTopTags();
   },
   components: {
     MessageNew,
@@ -131,6 +146,13 @@ export default {
 }
 .post-nav li {
   cursor: pointer;
-  margin-right: 20px;
+  height: 110px;
+  display: block;
+}
+.moment-li {
+  background: url(../assets/index/moment-new.png) no-repeat ;
+}
+.album-li{
+  background: url(../assets/index/album-new.png) no-repeat;
 }
 </style>
