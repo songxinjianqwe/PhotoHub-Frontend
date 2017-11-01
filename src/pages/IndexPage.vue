@@ -7,6 +7,10 @@
         <!-- 发表 -->
         <div class="post-block">
           <ul class="post-nav">
+            <li class="avatar-li">
+              <img v-if="user.avatar !== null":src="user.avatar"></img>
+              <img v-else src="../assets/index/avatar.png"></img>
+            </li>
             <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
             <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
           </ul>
@@ -16,7 +20,6 @@
           <moment v-for="item in feed.items" :key="item.id" :moment="item"></moment>
         </div>
       </div>
-
       <!-- 右侧 -->
       <div class="index-right">
         <div class="user-block">
@@ -24,93 +27,122 @@
           <login-form v-else></login-form>
         </div>
         <div class="top-moments">
+          <router-link to="/tags">
             <h2>热门标签</h2>
-            <ul>
-              <li v-for="tag in top10Tags.items" :key="tag.id">{{tag.name}}</li>
-            </ul>
+          </router-link>
+          <ul>
+            <li v-for="tag in top10Tags.items" :key="tag.id">{{tag.name}}</li>
+          </ul>
         </div>
       </div>
     </div>
-    
+
     <!-- 新增动态Dialog -->
     <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%" :before-close="handleDialogClose">
-      <message-new :loginResult="loginResult"></message-new>
+      <message-new :loginResult="loginResult" @moment-new-success="onMomentNewSuccess"></message-new>
     </el-dialog>
 
     <!-- 新增AlbumDialog -->
     <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%" :before-close="handleDialogClose">
       <album-new></album-new>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
-import MessageNew from "@/components/message/MessageNew";
-import AlbumNew from "@/components/album/AlbumNew";
-import Moment from "@/components/moment/Moment";
-import LoginForm from "@/components/user/LoginForm";
-import UserMenu from "@/components/user/UserMenu";
+import MessageNew from '@/components/message/MessageNew'
+import AlbumNew from '@/components/album/AlbumNew'
+import Moment from '@/components/moment/Moment'
+import LoginForm from '@/components/user/LoginForm'
+import UserMenu from '@/components/user/UserMenu'
 
 export default {
-  props: ["loginResult", "isLogin"],
+  props: ['loginResult', 'isLogin'],
   data() {
     return {
       momentNewDialogVisible: false,
       albumNewDialogVisible: false,
       feed: {},
       feedPage: 1,
-      top10Tags:{}
-    };
+      top10Tags: {},
+      user: {}
+    }
   },
   methods: {
+    onMomentNewSuccess(momentId) {
+      this.$message({
+        message: '发表成功',
+        type: 'success'
+      })
+      this.momentNewDialogVisible = false
+      this.$router.push(`/users/${this.loginResult.id}/moments/${momentId}`)
+    },
     handleDialogClose() {
-      this.momentNewDialogVisible = false;
-      this.albumNewDialogVisible = false;
+      this.momentNewDialogVisible = false
+      this.albumNewDialogVisible = false
     },
     fetchFeed() {
       if (this.isLogin) {
-        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE };
-        let headers = { Authentication: this.loginResult.token };
+        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE }
+        let headers = { Authentication: this.loginResult.token }
         this.axios
           .get(`/users/${this.loginResult.id}/feed`, {
             params: params,
             headers: headers
           })
           .then(response => {
-            this.feed = response.data;
-            console.log("获取用户feed成功");
-            console.log(this.feed);
+            this.feed = response.data
+            console.log('获取用户feed成功')
+            console.log(this.feed)
           })
           .catch(error => {
-            throw error;
-          });
+            throw error
+          })
       } else {
-        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE };
+        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE }
         this.axios
-          .get("/moments/hot", { params: params })
+          .get('/moments/hot', { params: params })
           .then(response => {
-            this.feed = response.data;
-            console.log("热门动态获取成功");
-            console.log(this.feed);
+            this.feed = response.data
+            console.log('热门动态获取成功')
+            console.log(this.feed)
           })
           .catch(error => {
-            throw error;
-          });
+            throw error
+          })
       }
     },
-    fetchTopTags(){
-      let params = { page: 1, per_page: 10 };
-      this.axios.get('/tags/hot',{params: params})
-      .then(response => {
-        this.top10Tags = response.data
-      }).catch(error => {
-        throw error
-      })
+    fetchTopTags() {
+      let params = { page: 1, per_page: 10 }
+      this.axios
+        .get('/tags/hot', { params: params })
+        .then(response => {
+          this.top10Tags = response.data
+        })
+        .catch(error => {
+          throw error
+        })
+    },
+    fetchUser() {
+      if(!this.isLogin){
+        return 
+      }
+      let header = { Authentication: this.loginResult.token }
+      this.axios
+        .get(`/users/${this.loginResult.id}`, { headers: header })
+        .then(response => {
+          this.user = response.data
+        })
+        .catch(error => {
+          throw error
+        })
     }
   },
   created() {
-    this.fetchFeed();
-    this.fetchTopTags();
+    this.fetchFeed()
+    this.fetchTopTags()
+    this.fetchUser()
   },
   components: {
     MessageNew,
@@ -119,7 +151,7 @@ export default {
     LoginForm,
     UserMenu
   }
-};
+}
 </script>
 <style scoped>
 .index-wrap {
@@ -136,6 +168,7 @@ export default {
 
 .index-right {
   float: left;
+  margin-left: 50px;
 }
 .post-nav {
   position: relative;
@@ -146,13 +179,36 @@ export default {
 }
 .post-nav li {
   cursor: pointer;
-  height: 110px;
+  height: 100px;
+  width: 100px;
   display: block;
+  float: left; /* 往左浮动 */
+  margin-right: 20px;
 }
+
+.avatar-li {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  box-sizing: border-box;
+  border: 4px solid #d9dde1;
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+}
+
+.avatar-li img{
+  width: 100px;
+  height: 100px;
+} 
+
 .moment-li {
-  background: url(../assets/index/moment-new.png) no-repeat ;
+  background: url(../assets/index/moment-new.png) no-repeat;
 }
-.album-li{
+.album-li {
   background: url(../assets/index/album-new.png) no-repeat;
+}
+.feed-block {
+  margin-top: 200px;
 }
 </style>

@@ -47,10 +47,11 @@ export default {
             )
           });
           localStorage.setItem("loginResult", JSON.stringify(response.data));
+          this.initCos(response.data.token)
           //跳转回主页
-          this.$router.push("/");
+          this.$router.push("/")
           //刷新当前页面
-          window.location.reload();
+          window.location.reload()
         })
         .catch(error => {
           console.log(error);

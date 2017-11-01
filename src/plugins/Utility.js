@@ -1,11 +1,11 @@
 exports.install = function (Vue, options) {
-    Vue.prototype.removeUnchangedValue = function (raw, now, necessaryAttr) {
-        for (let key in now) {
-            if (now[key] === raw[key] && key !== necessaryAttr) {
-                delete now[key]
+        Vue.prototype.removeUnchangedValue = function (raw, now, necessaryAttr) {
+            for (let key in now) {
+                if (now[key] === raw[key] && key !== necessaryAttr) {
+                    delete now[key]
+                }
             }
-        }
-    },
+        },
         Vue.prototype.formatDate = function (date, fmt) {
             let o = {
                 "M+": date.getMonth() + 1, //月份 
@@ -31,5 +31,30 @@ exports.install = function (Vue, options) {
                 u8arr[n] = bstr.charCodeAt(n);
             }
             return new Blob([u8arr], { type: mime });
-        }
+        },
+        Vue.prototype.initCos = function (token) {
+            console.log("初始化cos");
+            let cos = new CosCloud({
+                appid: 1252651195, // APPID 必填参数
+                bucket: "photohub", //bucketName 必填参数
+                region: "sh", //地域信息 必填参数 华南地区填gz 华东填sh 华北填tj,
+                getAppSign: callback => {
+                    console.log("getAppSign")
+                    console.log("尝试获取服务器token")
+                    let header = { Authentication: token }
+                    this.axios
+                        .get("/tokens/cos", { headers: header })
+                        .then(response => {
+                            console.log("cos获取服务器token 成功", response.data)
+                            callback(response.data)
+                        })
+                        .catch(error => {
+                            throw error
+                        });
+                }
+            });
+            return cos
+        },
+        Vue.prototype.COS_IMG_BASE_PATH = 'message_image/',
+        Vue.prototype.COS_VIDEO_BASE_PATH = 'message_video/'
 };
