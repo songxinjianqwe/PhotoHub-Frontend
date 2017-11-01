@@ -3,12 +3,12 @@ import Router from 'vue-router'
 import IndexPage from '@/pages/IndexPage'
 import RegisterPage from '@/pages/RegisterPage'
 import RegisterForm from '@/components/register/RegisterForm'
-import Activation from '@/components/register/Activation'
-import RegisterValidation from '@/components/register/RegisterValidation'
-import LoginPage from '@/pages/LoginPage'
+import RegisterTags from '@/components/register/RegisterTags'
+import RegisterFollows from '@/components/register/RegisterFollows'
 import UserPage from '@/pages/UserPage'
 import UserInfo from '@/components/user/UserInfo'
 import Error404Page from '@/pages/error-pages/404'
+import UserIndexPage from '@/pages/UserIndexPage'
 
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
@@ -34,8 +34,11 @@ const router = new Router({
       ]
     },
     {
-      path: '/login',
-      component: LoginPage
+      path: '/users/:id/index',
+      component: UserIndexPage,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/register',
@@ -47,12 +50,12 @@ const router = new Router({
           component: RegisterForm
         },
         {
-          path: 'activate/:id',
-          component: Activation
+          path: 'tags',
+          component: RegisterTags
         },
         {
-          path: 'validate/:activationId/:activationCode',
-          component: RegisterValidation
+          path: 'follows',
+          component: RegisterFollows
         }
       ]
     },

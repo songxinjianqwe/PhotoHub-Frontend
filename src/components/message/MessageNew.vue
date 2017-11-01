@@ -31,7 +31,6 @@ export default {
       cos: null,
       successCount: 0,
       albums: [],
-      startUpload: false,
       inputTag: '',
       inputTagVisible: false
     }
@@ -60,7 +59,6 @@ export default {
       this.images = {}
       this.albumId = undefined
       this.tags = []
-      this.startUpload = false
     },
     publish() {
       console.log('text', this.text)
@@ -203,30 +201,8 @@ export default {
   width: 100%;
   text-align: center;
 }
-
-.video-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.video-uploader .el-upload:hover {
-  border-color: #20a0ff;
-}
-
-.video-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 320px;
-  height: 240px;
-  line-height: 250px;
-}
-
-.video {
-  width: 320px;
-  height: 240px;
-  display: block;
+.tag{
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>

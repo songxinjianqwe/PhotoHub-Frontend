@@ -8,8 +8,7 @@
         <div class="post-block">
           <ul class="post-nav">
             <li class="avatar-li">
-              <img v-if="user.avatar !== null":src="user.avatar"></img>
-              <img v-else src="../assets/index/avatar.png"></img>
+              <img :src="avatar"></img>
             </li>
             <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
             <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
@@ -38,13 +37,13 @@
     </div>
 
     <!-- 新增动态Dialog -->
-    <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%" :before-close="handleDialogClose">
+    <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%">
       <message-new :loginResult="loginResult" @moment-new-success="onMomentNewSuccess"></message-new>
     </el-dialog>
 
     <!-- 新增AlbumDialog -->
-    <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%" :before-close="handleDialogClose">
-      <album-new></album-new>
+    <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%">
+      <album-new :loginResult="loginResult" @album-new-success="onAlbumNewSuccess"></album-new>
     </el-dialog>
 
   </div>
@@ -66,7 +65,8 @@ export default {
       feed: {},
       feedPage: 1,
       top10Tags: {},
-      user: {}
+      user: {},
+      avatar: require('../assets/index/avatar.png')
     }
   },
   methods: {
@@ -78,13 +78,17 @@ export default {
       this.momentNewDialogVisible = false
       this.$router.push(`/users/${this.loginResult.id}/moments/${momentId}`)
     },
-    handleDialogClose() {
-      this.momentNewDialogVisible = false
+    onAlbumNewSuccess(albumId) {
+      this.$message({
+        message: '创建成功',
+        type: 'success'
+      })
       this.albumNewDialogVisible = false
+      this.$router.push(`/users/${this.loginResult.id}/albums/${albumId}`)
     },
     fetchFeed() {
       if (this.isLogin) {
-        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE }
+        let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
         let headers = { Authentication: this.loginResult.token }
         this.axios
           .get(`/users/${this.loginResult.id}/feed`, {
@@ -100,7 +104,7 @@ export default {
             throw error
           })
       } else {
-        let params = { page: this.feedPage, per_page: this.DEFAULE_PER_PAGE }
+        let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
         this.axios
           .get('/moments/hot', { params: params })
           .then(response => {
@@ -114,7 +118,7 @@ export default {
       }
     },
     fetchTopTags() {
-      let params = { page: 1, per_page: 10 }
+      let params = { page: 1, 'per-page': 10 }
       this.axios
         .get('/tags/hot', { params: params })
         .then(response => {
@@ -125,14 +129,17 @@ export default {
         })
     },
     fetchUser() {
-      if(!this.isLogin){
-        return 
+      if (!this.isLogin) {
+        return
       }
       let header = { Authentication: this.loginResult.token }
       this.axios
         .get(`/users/${this.loginResult.id}`, { headers: header })
         .then(response => {
           this.user = response.data
+          if (this.user.avatar !== null) {
+            this.avatar = this.user.avatar
+          }
         })
         .catch(error => {
           throw error
@@ -197,10 +204,10 @@ export default {
   overflow: hidden;
 }
 
-.avatar-li img{
+.avatar-li img {
   width: 100px;
   height: 100px;
-} 
+}
 
 .moment-li {
   background: url(../assets/index/moment-new.png) no-repeat;

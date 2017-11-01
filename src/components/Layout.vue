@@ -18,7 +18,7 @@
             <el-menu-item index="/activities">活动</el-menu-item>
             <el-menu-item :index="'/users/'+loginResult.id+'/follows'">关注</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
-            <el-submenu :index="'/users/'+loginResult.id">
+            <el-submenu v-if="isLogin" :index="'/users/'+loginResult.id">
               <template slot="title">
                 更多
               </template>
@@ -72,6 +72,9 @@ export default {
     },
     /**当退出登录时，会提示信息，并删除本地的localStorage，本地的内存数据，以及服务器的token */
     logout() {
+      if(!this.isLogin){
+        return 
+      }
       const h = this.$createElement
       this.$notify({
         title: '退出成功',
@@ -118,7 +121,6 @@ html {
 }
 
 body {
-  background: #ededef;
   font-size: 14px;
   color: #444;
   min-height: 100%;
@@ -157,10 +159,11 @@ body {
   position: relative;
   z-index: 65;
   width: 580px;
-  height: 47px;
+  height: 48px;
   padding: 22px 5px 0 0;
   margin: -36px 0 0;
   text-align: left;
+  border: 0px;
 }
 /* content */
 .app-content {

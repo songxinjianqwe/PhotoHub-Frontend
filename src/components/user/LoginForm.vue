@@ -11,6 +11,7 @@
             <el-form-item class="item">
                 <el-button type="primary" @click="submitForm">登录</el-button>
                 <el-button @click="resetForm">重置</el-button>
+                <el-button @click="register">注册</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -27,6 +28,9 @@ export default {
     };
   },
   methods: {
+    register(){
+      this.$router.push('/register/form')
+    },
     submitForm() {
       console.log(this.loginForm);
       this.axios
