@@ -1,8 +1,11 @@
 <<template>
     <div class="moment">
-      <h4>{{moment.user.username}}</h4>
-      <span v-if="moment.type = 'user'">关注动态</span>  
-      <span v-else>热门动态</span>
+      <!-- 如果是在首页显示的，那么moment有一个type属性；如果是在用户主页显示的，那么moment没有type属性 -->
+      <div v-if="'type' in moment">
+        <h4>{{moment.user.username}}</h4>
+        <span v-if="moment.type === 'user'">关注动态</span>  
+        <span v-else>热门动态</span>
+      </div>
       <time class="time">{{ moment.message.create_time }}</time>
       <div class="article" v-html="compiledMarkdown"></div>
     </div>
@@ -30,7 +33,7 @@ export default {
   display: block;
   border: 1px solid #ccc;
   margin-bottom: 10px;
-  width:600px;
+  width: 600px;
   overflow: hidden;
 }
 .time {

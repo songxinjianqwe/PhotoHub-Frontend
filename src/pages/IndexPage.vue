@@ -8,15 +8,16 @@
         <div class="post-block">
           <ul class="post-nav">
             <li class="avatar-li">
-              <img :src="avatar"></img>
+              <user-avatar-uplpad :avatar="avatar" :loginResult="loginResult" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
             </li>
             <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
             <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
           </ul>
         </div>
         <!-- 动态 -->
-        <div class="feed-block">
+        <div class="feed-block" v-loading="loadingMoments">
           <moment v-for="item in feed" :key="item.id" :moment="item"></moment>
+          <el-button @click="fetchFeed">加载更多</el-button>
         </div>
       </div>
       <!-- 右侧 -->
@@ -46,6 +47,9 @@
       <album-new :loginResult="loginResult" @album-new-success="onAlbumNewSuccess"></album-new>
     </el-dialog>
 
+    <!-- 返回顶部Dialog -->
+    <div id="to_top" @click="toTop">返回顶部</div>
+
   </div>
 </template>
 
@@ -55,6 +59,7 @@ import AlbumNew from '@/components/album/AlbumNew'
 import Moment from '@/components/moment/Moment'
 import LoginForm from '@/components/user/LoginForm'
 import UserMenu from '@/components/user/UserMenu'
+import UserAvatarUplpad from '@/components/user/UserAvatarUpload'
 
 export default {
   props: ['loginResult', 'isLogin'],
@@ -67,10 +72,39 @@ export default {
       top10Tags: {},
       user: {},
       avatar: require('../assets/index/avatar.png'),
-      isUserFeedNotEnough: false
+      isUserFeedNotEnough: false,
+      loadingMoments: true
     }
   },
   methods: {
+    onAvatarUploadSuccess(avatar) {
+      this.avatar = avatar
+      this.user.avatar = avatar
+      this.axios
+        .put(`/users/${this.loginResult.id}`, this.user)
+        .then(response => {
+          console.log('用户更新完毕')
+        })
+        .catch(error => {
+          throw error
+        })
+    },
+    toTop() {
+      //设置定时器
+      setInterval(function() {
+        //获取滚动条距离顶部高度
+        let osTop =
+          document.documentElement.scrollTop || document.body.scrollTop
+        let ispeed = Math.floor(-osTop / 7)
+        document.documentElement.scrollTop = document.body.scrollTop =
+          osTop + ispeed
+        //到达顶部，清除定时器
+        if (osTop == 0) {
+          clearInterval(timer)
+        }
+        isTop = true
+      }, 30)
+    },
     onMomentNewSuccess(momentId) {
       this.$message({
         message: '发表成功',
@@ -87,7 +121,7 @@ export default {
       this.albumNewDialogVisible = false
       this.$router.push(`/users/${this.loginResult.id}/albums/${albumId}`)
     },
-    processFeedResponse(response,type) {
+    processFeedResponse(response, type) {
       if (response.data.items.length === 0) {
         console.log('本次读取条数为0，重新读取热门动态')
         this.isUserFeedNotEnough = true
@@ -99,7 +133,7 @@ export default {
         item['type'] = type
         this.feed.push(item)
       })
-      console.log('获取feed成功')
+      console.log('获取动态成功')
       console.log(this.feed)
       this.$message({
         message: '加载动态完毕',
@@ -113,11 +147,12 @@ export default {
       } else {
         this.feedPage++
       }
+      this.loadingMoments = false
     },
     fetchFeed() {
       //如果登录并且自己的feed没有读取完毕，那么读取用户feed；否则读取热门动态
       if (this.isLogin && !this.isUserFeedNotEnough) {
-        console.log('获取feed... feedPage:', this.feedPage)
+        console.log('获取用户动态')
         let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
         let headers = { Authentication: this.loginResult.token }
         this.axios
@@ -126,17 +161,18 @@ export default {
             headers: headers
           })
           .then(response => {
-            this.processFeedResponse(response,'user')
+            this.processFeedResponse(response, 'user')
           })
           .catch(error => {
             throw error
           })
       } else {
+        console.log('获取热门动态')
         let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
         this.axios
           .get('/moments/hot', { params: params })
           .then(response => {
-            this.processFeedResponse(response,'hot')
+            this.processFeedResponse(response, 'hot')
           })
           .catch(error => {
             throw error
@@ -183,14 +219,15 @@ export default {
     this.fetchFeed()
     this.fetchTopTags()
     this.fetchUser()
-    window.addEventListener('scroll', this.bindScroll)
+    window.addEventListener('scroll', this.throttle(this.bindScroll, 1000))
   },
   components: {
     MessageNew,
     AlbumNew,
     Moment,
     LoginForm,
-    UserMenu
+    UserMenu,
+    UserAvatarUplpad
   }
 }
 </script>
@@ -218,6 +255,7 @@ export default {
   padding: 1px 2px 3px;
   background-position: 0 0;
 }
+
 .post-nav li {
   cursor: pointer;
   height: 100px;
@@ -238,18 +276,26 @@ export default {
   overflow: hidden;
 }
 
-.avatar-li img {
-  width: 100px;
-  height: 100px;
-}
-
 .moment-li {
   background: url(../assets/index/moment-new.png) no-repeat;
 }
 .album-li {
   background: url(../assets/index/album-new.png) no-repeat;
 }
+
 .feed-block {
   margin-top: 200px;
+}
+
+#to_top {
+  width: 30px;
+  height: 40px;
+  padding: 20px;
+  font: 14px/20px arial;
+  text-align: center;
+  background: #06c;
+  position: absolute;
+  cursor: pointer;
+  color: #fff;
 }
 </style>

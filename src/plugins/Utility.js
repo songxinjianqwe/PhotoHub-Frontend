@@ -57,52 +57,53 @@ exports.install = function (Vue, options) {
         },
         Vue.prototype.COS_IMG_BASE_PATH = 'message_image/',
         Vue.prototype.COS_VIDEO_BASE_PATH = 'message_video/'
-    //滚动条在Y轴上的滚动距离
-    Vue.prototype.getScrollTop = function () {
-        let scrollTop = 0,
-            bodyScrollTop = 0,
-            documentScrollTop = 0
-        if (document.body) {
-            bodyScrollTop = document.body.scrollTop
+    Vue.prototype.getScrollTop = function (element) {
+        if (element) {
+            return element.scrollTop
+        } else {
+            return document.documentElement.scrollTop;
         }
-        if (document.documentElement) {
-            documentScrollTop = document.documentElement.scrollTop
-        }
-        scrollTop =
-            bodyScrollTop - documentScrollTop > 0
-                ? bodyScrollTop
-                : documentScrollTop
-        return scrollTop
     },
         //文档的总高度
-        Vue.prototype.getScrollHeight = function () {
-            let scrollHeight = 0,
-                bodyScrollHeight = 0,
-                documentScrollHeight = 0
-            if (document.body) {
-                bodyScrollHeight = document.body.scrollHeight
+        Vue.prototype.getScrollHeight = function (element) {
+            if (element) {
+                return element.scrollHeight;
+            } else {
+                return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
             }
-            if (document.documentElement) {
-                documentScrollHeight = document.documentElement.scrollHeight
-            }
-            scrollHeight =
-                bodyScrollHeight - documentScrollHeight > 0
-                    ? bodyScrollHeight
-                    : documentScrollHeight
-            return scrollHeight
         },
         //浏览器视口的高度
-        Vue.prototype.getWindowHeight = function () {
-            let windowHeight = 0
-            if (document.compatMode == 'CSS1Compat') {
-                windowHeight = document.documentElement.clientHeight
+        Vue.prototype.getClientHeight = function (element) {
+            if (element) {
+                return element.clientHeight
             } else {
-                windowHeight = document.body.clientHeight
+                return document.documentElement.clientHeight
             }
-            return windowHeight
         },
-        Vue.prototype.isScrollInBottom = function () {
-            return this.getScrollTop() + this.getWindowHeight() - 10 >=
-                this.getScrollHeight()
+        Vue.prototype.isScrollInBottom = function (element) {
+            console.log('this.getScrollTop(element)', this.getScrollTop(element));
+            console.log('this.getClientHeight(element)', this.getClientHeight(element));
+            console.log('this.getScrollHeight(element)', this.getScrollHeight(element));
+            return this.getScrollTop(element) + this.getClientHeight(element) + 10 >
+                this.getScrollHeight(element)
+        },
+        Vue.prototype.throttle = function (fn, delay, options) {
+            var wait = false;
+            if (!options) options = {};
+            return function () {
+                var that = this, args = arguments;
+                if (!wait) {
+                    if (!(options.leading === false)) {
+                        fn.apply(that, args);
+                    }
+                    wait = true;
+                    setTimeout(function () {
+                        if (!(options.trailing === false)) {
+                            fn.apply(that, args);
+                        }
+                        wait = false;
+                    }, delay);
+                }
+            }
         }
 };

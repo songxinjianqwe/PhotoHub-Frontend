@@ -1,20 +1,21 @@
 <template>
-    <el-container>
-        <el-aside class="aside">
-            <div class="user-info">
-                <img :src="user.avatar" />
-                <h2>{{user.username}}</h2>
-                <div v-text="user.introduction"></div>
-            </div>
-        </el-aside>
-        <el-main class="main-moments">
-            <moment v-for="item in moments" :key="item.id" :moment="item"></moment>
-        </el-main>
-    </el-container>
+  <el-container  >
+    <el-aside class="aside" v-loading.fullscreen.lock="fullscreenLoading">
+      <div class="user-info">
+        <img :src="user.avatar" />
+        <h2>{{user.username}}</h2>
+        <div v-text="user.introduction"></div>
+      </div>
+    </el-aside>
+    <el-main id="main-moments">
+      <moment v-for="item in moments" :key="item.id" :moment="item"></moment>
+      <el-button @click="fetchMoments">加载更多</el-button>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
-const userIndexPattern = new RegExp('\/users\/\\d+\\/index')
+const userIndexPattern = new RegExp('/users/\\d+\\/index')
 import Moment from '@/components/moment/Moment'
 export default {
   data() {
@@ -22,7 +23,9 @@ export default {
       user: {},
       loginResult: {},
       moments: [],
-      page: 1
+      page: 1,
+      totalPages: 1,
+      fullscreenLoading: true
     }
   },
   methods: {
@@ -40,6 +43,14 @@ export default {
         })
     },
     fetchMoments() {
+      if (this.page > this.totalPages) {
+        this.$message({
+          showClose: true,
+          message: '已无更多动态',
+          type: 'warning'
+        })
+        return 
+      }
       let params = {
         user_id: this.user.id,
         page: this.page,
@@ -52,14 +63,7 @@ export default {
           headers: headers
         })
         .then(response => {
-          if (response.data.items.length === 0) {
-            this.$message({
-              showClose: true,
-              message: '已无更多动态',
-              type: 'warning'
-            })
-            return
-          }
+          this.totalPages = response.data._meta.pageCount
           this.moments = this.moments.concat(response.data.items)
           console.log(this.moments)
           this.page++
@@ -67,15 +71,18 @@ export default {
             message: '加载动态完毕',
             type: 'success'
           })
+          this.fullscreenLoading = false
         })
         .catch(error => {
           throw error
         })
     },
     bindScroll() {
-      console.log('bindScroll triggered...')
-      console.log('userIndexPattern.test(this.$route.path)',userIndexPattern.test(this.$route.path));
-      if (this.isScrollInBottom() && userIndexPattern.test(this.$route.path)) {
+      if (
+        this.isScrollInBottom(document.getElementById('main-moments')) &&
+        userIndexPattern.test(this.$route.path)
+      ) {
+        console.log('UserIndexPage bindScroll triggered...')
         this.$message('加载中...')
         this.fetchMoments()
       }
@@ -84,9 +91,11 @@ export default {
   components: {
     Moment
   },
-  created() {
+  mounted() {
     this.fetchUser()
-    window.addEventListener('scroll', this.bindScroll)
+    document
+      .getElementById('main-moments')
+      .addEventListener('scroll', this.throttle(this.bindScroll, 1000))
   }
 }
 </script>
@@ -95,7 +104,6 @@ export default {
 .aside {
   width: 300px;
   height: 507px;
-  background-color: rgb(238, 241, 246);
   text-align: center;
   background: url('../assets/user/user-index.png') no-repeat;
 }
@@ -107,7 +115,7 @@ export default {
   width: 100px;
   height: 100px;
 }
-.main-moments {
+#main-moments {
   margin-left: 200px;
   height: 507px;
   overflow: auto;

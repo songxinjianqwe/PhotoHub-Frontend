@@ -111,10 +111,6 @@ export default {
 </script>
 
 <style>
-html {
-  height: 100%;
-}
-
 body {
   font-size: 14px;
   color: #444;
