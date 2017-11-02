@@ -20,6 +20,7 @@ export default {
       user: {
         username: '',
         password: '',
+        introduction: '',
         tags: [],
         follows: []
       }

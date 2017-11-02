@@ -37,11 +37,6 @@
         <router-view :loginResult="loginResult" :isLogin="isLogin"></router-view>
       </keep-alive>
     </div>
-
-    <!-- Footer -->
-    <div class="app-footer">
-      <p> 2017 PhotoHub </p>
-    </div>
   </div>
 </template>
 
@@ -134,7 +129,6 @@ body {
 .app-header {
   height: 82px;
   width: 100%;
-  margin-bottom: 30px;
   background-color: #24292c;
 }
 .app-header-inner {
@@ -164,22 +158,6 @@ body {
   margin: -36px 0 0;
   text-align: left;
   border: 0px;
-}
-/* content */
-.app-content {
-  padding-bottom: 100px;
-}
-/* footer */
-.app-footer {
-  text-align: center;
-  height: 100px;
-  width: 100%;
-  line-height: 80px;
-  background: #e3e4e8;
-  clear: both;
-  margin-top: -100px;
-  position: absolute;
-  bottom: 0;
 }
 
 /* 不可删除 */

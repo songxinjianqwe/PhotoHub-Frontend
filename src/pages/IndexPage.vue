@@ -16,7 +16,7 @@
         </div>
         <!-- 动态 -->
         <div class="feed-block">
-          <moment v-for="item in feed.items" :key="item.id" :moment="item"></moment>
+          <moment v-for="item in feed" :key="item.id" :moment="item"></moment>
         </div>
       </div>
       <!-- 右侧 -->
@@ -62,11 +62,12 @@ export default {
     return {
       momentNewDialogVisible: false,
       albumNewDialogVisible: false,
-      feed: {},
+      feed: [],
       feedPage: 1,
       top10Tags: {},
       user: {},
-      avatar: require('../assets/index/avatar.png')
+      avatar: require('../assets/index/avatar.png'),
+      isUserFeedNotEnough: false
     }
   },
   methods: {
@@ -86,8 +87,37 @@ export default {
       this.albumNewDialogVisible = false
       this.$router.push(`/users/${this.loginResult.id}/albums/${albumId}`)
     },
+    processFeedResponse(response,type) {
+      if (response.data.items.length === 0) {
+        console.log('本次读取条数为0，重新读取热门动态')
+        this.isUserFeedNotEnough = true
+        this.feedPage = 1
+        this.fetchFeed()
+        return
+      }
+      response.data.items.forEach(item => {
+        item['type'] = type
+        this.feed.push(item)
+      })
+      console.log('获取feed成功')
+      console.log(this.feed)
+      this.$message({
+        message: '加载动态完毕',
+        type: 'success'
+      })
+      //已经读完
+      if (response.data.items.length < this.DEFAULE_PER_PAGE) {
+        console.log('本次读取条数少于一页，下次读取热门动态')
+        this.isUserFeedNotEnough = true
+        this.feedPage = 1
+      } else {
+        this.feedPage++
+      }
+    },
     fetchFeed() {
-      if (this.isLogin) {
+      //如果登录并且自己的feed没有读取完毕，那么读取用户feed；否则读取热门动态
+      if (this.isLogin && !this.isUserFeedNotEnough) {
+        console.log('获取feed... feedPage:', this.feedPage)
         let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
         let headers = { Authentication: this.loginResult.token }
         this.axios
@@ -96,9 +126,7 @@ export default {
             headers: headers
           })
           .then(response => {
-            this.feed = response.data
-            console.log('获取用户feed成功')
-            console.log(this.feed)
+            this.processFeedResponse(response,'user')
           })
           .catch(error => {
             throw error
@@ -108,9 +136,7 @@ export default {
         this.axios
           .get('/moments/hot', { params: params })
           .then(response => {
-            this.feed = response.data
-            console.log('热门动态获取成功')
-            console.log(this.feed)
+            this.processFeedResponse(response,'hot')
           })
           .catch(error => {
             throw error
@@ -144,12 +170,20 @@ export default {
         .catch(error => {
           throw error
         })
+    },
+    bindScroll() {
+      if (this.isScrollInBottom() && this.$route.path === '/') {
+        console.log('bindScroll triggered...')
+        this.$message('加载中...')
+        this.fetchFeed()
+      }
     }
   },
   created() {
     this.fetchFeed()
     this.fetchTopTags()
     this.fetchUser()
+    window.addEventListener('scroll', this.bindScroll)
   },
   components: {
     MessageNew,

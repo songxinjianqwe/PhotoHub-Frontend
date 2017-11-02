@@ -1,15 +1,19 @@
 <template>
   <div class="register">
     <el-form :model="user" ref="user" label-width="100px">
-      <el-form-item label="用户名" prop="username">
+      <el-form-item label="用户名">
         <el-input v-model="user.username" size="tiny" @blur="onUsernameBlur"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
+      <el-form-item label="密码">
         <el-input type="password" v-model="user.password" auto-complete="off" size="tiny"></el-input>
       </el-form-item>
+      <el-form-item label="自我介绍">
+        <el-input type="textarea" autosize placeholder="请输入自我介绍" v-model="user.introduction">
+        </el-input>
+      </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="next">下一步</el-button>
         <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="next">下一步</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -44,6 +48,7 @@ export default {
       this.isUsernameDuplicated()
       console.log('表单数据为', this.user)
       if (this.user.username !== '' && this.user.password !== '') {
+        this.$emit('form-success')
         this.$router.push('/register/tags')
       } else {
         this.$alert('用户名和密码不可重复', '输入错误', {
@@ -54,6 +59,7 @@ export default {
     resetForm() {
       this.user.username = ''
       this.user.password = ''
+      this.user.introduction = ''
     }
   }
 }

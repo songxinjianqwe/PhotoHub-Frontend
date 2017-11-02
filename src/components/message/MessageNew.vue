@@ -64,7 +64,7 @@ export default {
       console.log('text', this.text)
       console.log('images', this.images)
       console.log('tags', this.tags)
-      if (this.images !== {}) {
+      if (Object.keys(this.images).length > 0) {
         //开始展示等待动画
         this.uploadimages()
       } else {
@@ -80,6 +80,7 @@ export default {
     //*************************************** */
     //处理图片上传
     uploadimages() {
+      console.log('开始上传图片')
       for (let key in this.images) {
         this.uploadSingleImage(this.images[key])
       }

@@ -1,11 +1,11 @@
 exports.install = function (Vue, options) {
-        Vue.prototype.removeUnchangedValue = function (raw, now, necessaryAttr) {
-            for (let key in now) {
-                if (now[key] === raw[key] && key !== necessaryAttr) {
-                    delete now[key]
-                }
+    Vue.prototype.removeUnchangedValue = function (raw, now, necessaryAttr) {
+        for (let key in now) {
+            if (now[key] === raw[key] && key !== necessaryAttr) {
+                delete now[key]
             }
-        },
+        }
+    },
         Vue.prototype.formatDate = function (date, fmt) {
             let o = {
                 "M+": date.getMonth() + 1, //月份 
@@ -57,4 +57,52 @@ exports.install = function (Vue, options) {
         },
         Vue.prototype.COS_IMG_BASE_PATH = 'message_image/',
         Vue.prototype.COS_VIDEO_BASE_PATH = 'message_video/'
+    //滚动条在Y轴上的滚动距离
+    Vue.prototype.getScrollTop = function () {
+        let scrollTop = 0,
+            bodyScrollTop = 0,
+            documentScrollTop = 0
+        if (document.body) {
+            bodyScrollTop = document.body.scrollTop
+        }
+        if (document.documentElement) {
+            documentScrollTop = document.documentElement.scrollTop
+        }
+        scrollTop =
+            bodyScrollTop - documentScrollTop > 0
+                ? bodyScrollTop
+                : documentScrollTop
+        return scrollTop
+    },
+        //文档的总高度
+        Vue.prototype.getScrollHeight = function () {
+            let scrollHeight = 0,
+                bodyScrollHeight = 0,
+                documentScrollHeight = 0
+            if (document.body) {
+                bodyScrollHeight = document.body.scrollHeight
+            }
+            if (document.documentElement) {
+                documentScrollHeight = document.documentElement.scrollHeight
+            }
+            scrollHeight =
+                bodyScrollHeight - documentScrollHeight > 0
+                    ? bodyScrollHeight
+                    : documentScrollHeight
+            return scrollHeight
+        },
+        //浏览器视口的高度
+        Vue.prototype.getWindowHeight = function () {
+            let windowHeight = 0
+            if (document.compatMode == 'CSS1Compat') {
+                windowHeight = document.documentElement.clientHeight
+            } else {
+                windowHeight = document.body.clientHeight
+            }
+            return windowHeight
+        },
+        Vue.prototype.isScrollInBottom = function () {
+            return this.getScrollTop() + this.getWindowHeight() - 10 >=
+                this.getScrollHeight()
+        }
 };
