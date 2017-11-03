@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading="loading">
         <el-form ref="albumForm" :model="albumForm" label-width="80px">
             <el-form-item label="相册名称">
                 <el-input v-model="albumForm.name"></el-input>
@@ -34,7 +34,8 @@ export default {
         tags: []
       },
       inputTag: '',
-      inputTagVisible: false
+      inputTagVisible: false,
+      loading: false
     }
   },
   methods: {
@@ -57,11 +58,13 @@ export default {
       })
     },
     onSubmit(){
+        this.loading = true
         this.albumForm.user_id = this.loginResult.id
         console.log('form',this.albumForm)
         let header  = {Authentication : this.loginResult.token}
         this.axios.post(`/users/${this.loginResult.id}/albums`,this.albumForm,{headers:header})
         .then(response => {
+            this.loading = false
             this.$emit('album-new-success',response.data.id);
         }).catch(error =>{
             throw error

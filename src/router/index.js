@@ -5,11 +5,14 @@ import RegisterPage from '@/pages/RegisterPage'
 import RegisterForm from '@/components/register/RegisterForm'
 import RegisterTags from '@/components/register/RegisterTags'
 import RegisterFollows from '@/components/register/RegisterFollows'
-import UserPage from '@/pages/UserPage'
-import UserInfo from '@/components/user/UserInfo'
+
 import Error404Page from '@/pages/error-pages/404'
 import UserIndexPage from '@/pages/UserIndexPage'
 
+import Feed from '@/components/index/Feed'
+import UserMoments from '@/components/index/UserMoments'
+import UserInfo from '@/components/index/UserInfo'
+import UserAlbum from '@/components/index/UserAlbum'
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
 // 在创建的 router 对象中，如果不配置 mode，就会使用默认的 hash 模式，该模式下会将路径格式化为 #! 开头。
@@ -18,18 +21,32 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      component: IndexPage
-    },
-    {
-      path: '/users/:id',
-      component: UserPage,
-      meta: {
-        requiresAuth: true
-      },
+      component: IndexPage,
       children: [
         {
-          path: '/users/:id/info',
-          component: UserInfo
+          path: '',
+          component: Feed
+        },
+        {
+          path: 'users/:id/info',
+          component: UserInfo,
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'users/:id/albums',
+          component: UserAlbum,
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'users/:id/moments',
+          component: UserMoments,
+          meta: {
+            requiresAuth: true
+          }
         }
       ]
     },
@@ -72,7 +89,7 @@ router.beforeEach((to, from, next) => {
     // 如果没有登录
     if (localStorage.getItem('loginResult') === null) {
       next({
-        path: '/login',
+        path: '/',
         // to.fullPath表示把当前路由信息传递过去方便登录后跳转回
         query: { redirect: to.fullPath }
       })

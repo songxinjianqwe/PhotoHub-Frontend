@@ -1,6 +1,6 @@
 <template>
-  <el-container  >
-    <el-aside class="aside" v-loading.fullscreen.lock="fullscreenLoading">
+  <el-container v-loading.fullscreen.lock="fullscreenLoading">
+    <el-aside class="aside">
       <div class="user-info">
         <img :src="user.avatar" />
         <h2>{{user.username}}</h2>
@@ -8,7 +8,7 @@
       </div>
     </el-aside>
     <el-main id="main-moments">
-      <moment v-for="item in moments" :key="item.id" :moment="item"></moment>
+      <moment v-for="item in moments" :key="item.id" :moment="item" from="user-index"></moment>
       <el-button @click="fetchMoments">加载更多</el-button>
     </el-main>
   </el-container>
@@ -49,7 +49,7 @@ export default {
           message: '已无更多动态',
           type: 'warning'
         })
-        return 
+        return
       }
       let params = {
         user_id: this.user.id,
@@ -95,8 +95,15 @@ export default {
     this.fetchUser()
     document
       .getElementById('main-moments')
-      .addEventListener('scroll', this.throttle(this.bindScroll, 1000))
-  }
+      .addEventListener('scroll', this.throttle(this.bindScroll, 2000))
+  },
+  //在/products/:id <=> 其他页面 之间跳转时被调用
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      console.log('beforeRouteEnter:跳转至', to.path)
+      vm.fetchUser()
+    })
+  },
 }
 </script>
 

@@ -7,7 +7,7 @@
         <router-link to="/" class="logo">
           <h1>PhotoHub</h1>
         </router-link>
-
+      
         <!-- 导航条 -->
         <div class="header-nav">
           <el-menu class="nav-menu" :default-active="$route.path" :router="true" mode="horizontal" background-color="#24292c" text-color="#999" active-text-color="#ffffff">

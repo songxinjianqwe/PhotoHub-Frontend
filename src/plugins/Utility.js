@@ -81,17 +81,14 @@ exports.install = function (Vue, options) {
             }
         },
         Vue.prototype.isScrollInBottom = function (element) {
-            console.log('this.getScrollTop(element)', this.getScrollTop(element));
-            console.log('this.getClientHeight(element)', this.getClientHeight(element));
-            console.log('this.getScrollHeight(element)', this.getScrollHeight(element));
             return this.getScrollTop(element) + this.getClientHeight(element) + 10 >
                 this.getScrollHeight(element)
         },
         Vue.prototype.throttle = function (fn, delay, options) {
-            var wait = false;
+            let wait = false;
             if (!options) options = {};
             return function () {
-                var that = this, args = arguments;
+                let that = this, args = arguments;
                 if (!wait) {
                     if (!(options.leading === false)) {
                         fn.apply(that, args);

@@ -38,61 +38,58 @@
 
 <script>
 export default {
-    props: ['user', 'copiedUser', 'token'],
-    data() {
-        return {
-            errors: []
-        }
+  data() {
+    return {}
+  },
+  methods: {
+    confirmUpdate() {
+      this.$confirm('此操作将修改用户信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.onModify()
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消修改'
+          })
+        })
     },
-    methods: {
-        confirmUpdate() {
-            this.$confirm('此操作将修改用户信息, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.onModify()
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消修改'
-                });
-            });
-        },
-        onModify() {
-            console.log("待更新的表单数据")
-            //调用全局函数
-            console.log(this.copiedUser)
-            let header = { 'Authentication': this.token }
-            this.axios.put("/users", this.copiedUser, { headers: header }).then((response) => {
-                console.log('更新完毕')
-                this.$message({
-                    type: 'success',
-                    message: '更新成功!'
-                });
-                this.$emit('user-update', this.copiedUser)
-            }).catch((error) => {
-                console.log('更新失败')
-                console.log(error)
-                if ("response" in error) {
-                    this.errors = error.response.data.fieldErrors
-                }
-            })
-        },
-        datePick(val) {
-            console.log('日期变更')
-            this.copiedUser.birthday = val
-            console.log('新日期', this.copiedUser.birthday)
-        }
+    onModify() {
+      console.log('待更新的表单数据')
+      //调用全局函数
+      console.log(this.copiedUser)
+      let header = { Authentication: this.token }
+      this.axios
+        .put('/users', this.copiedUser, { headers: header })
+        .then(response => {
+          console.log('更新完毕')
+          this.$message({
+            type: 'success',
+            message: '更新成功!'
+          })
+          this.$emit('user-update', this.copiedUser)
+        })
+        .catch(error => {
+          console.log('更新失败')
+          console.log(error)
+          if ('response' in error) {
+            this.errors = error.response.data.fieldErrors
+          }
+        })
+    },
+    datePick(val) {
+      console.log('日期变更')
+      this.copiedUser.birthday = val
+      console.log('新日期', this.copiedUser.birthday)
     }
+  }
 }
 </script>
 
 <style scoped>
-.user-info {
-    float: left;
-    width: 300px;
-    margin-left: 300px;
-    text-align: center;
-}
+
 </style>
