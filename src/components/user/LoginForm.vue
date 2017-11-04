@@ -51,7 +51,6 @@ export default {
             )
           })
           localStorage.setItem('loginResult', JSON.stringify(response.data))
-          this.initCos(response.data.token)
           setTimeout(() => {
             //跳转回主页
             this.$router.push('/')

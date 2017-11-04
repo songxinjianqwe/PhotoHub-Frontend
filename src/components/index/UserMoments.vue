@@ -1,12 +1,12 @@
 <template>
   <div v-loading="loading">
     <h1>我的动态</h1>
-    <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-moments" :loginResult="loginResult" @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
+    <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-moments"  @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
     <el-button @click="fetchMoments">加载更多</el-button>
 
     <!-- 编辑动态Dialog -->
     <el-dialog title="编辑动态" :visible.sync="momentEditDialogVisible" width="70%">
-      <message-edit :copiedMoment="copiedMoment" :loginResult="loginResult" @moment-edit-success="onMomentEditSuccess"></message-edit>
+      <message-edit :copiedMoment="copiedMoment" @moment-edit-success="onMomentEditSuccess"></message-edit>
     </el-dialog>
   </div>
 </template>
@@ -16,7 +16,7 @@ import Moment from '@/components/moment/Moment'
 import MessageEdit from '@/components/message/MessageEdit'
 const userMomentsPattern = new RegExp('/users/\\d+\\/moments')
 export default {
-  props: ['user', 'loginResult'],
+  props: ['user'],
   data() {
     return {
       moments: [],
@@ -68,11 +68,11 @@ export default {
         return
       }
       let params = {
-        user_id: this.loginResult.id,
+        user_id: this._id(),
         page: this.page,
         'per-page': this.DEFAULE_PER_PAGE
       }
-      let headers = { Authentication: this.loginResult.token }
+      let headers = { Authentication: this._token() }
       this.axios
         .get('/moments', {
           params: params,

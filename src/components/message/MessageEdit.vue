@@ -22,7 +22,7 @@ import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 
 export default {
-  props: ['loginResult', 'copiedMoment'],
+  props: ['copiedMoment'],
   data() {
     return {
       //因为props是一次性绑定，不会实时更新，所有需要将props赋值给data中的变量，然后watch这个props，变化时更新到data中
@@ -49,7 +49,7 @@ export default {
         fields: 'id,name'
       }
       this.axios
-        .get(`/users/${this.loginResult.id}/albums`, { params: param })
+        .get(`/users/${this._id()}/albums`, { params: param })
         .then(response => {
           this.albums = response.data.items
           console.log('加载albums成功')
@@ -132,9 +132,9 @@ export default {
       let body = {
         id: this.messageId,
         text: this.text,
-        user_id: this.loginResult.id
+        user_id: this._id()
       }
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
         .put(`/messages/${this.messageId}`, body, {
           headers: header
@@ -144,7 +144,7 @@ export default {
           console.log(response.data)
           let body = {
             id: this.momentId,
-            user_id: this.loginResult.id,
+            user_id: this._id(),
             album_id: this.albumId,
             message_id: response.data.id,
             tags: this.tags
@@ -220,7 +220,7 @@ export default {
   },
   created() {
     if (this.cos === null) {
-      this.cos = this.initCos(this.loginResult.token)
+      this.cos = this.initCos(this._token())
     }
     this.copyValue()
     this.fetchAlbums()

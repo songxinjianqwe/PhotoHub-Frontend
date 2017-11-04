@@ -5,19 +5,17 @@
       <!-- 左侧 -->
       <div class="index-left">
         <keep-alive>
-          <router-view @fetch-feed="fetchFeed" @user-update="onUserUpdate" :loadingMoments="loadingMoments" :loginResult="loginResult" :feed="feed" :user="user" :copiedUser="copiedUser" :avatar="avatar">
+          <router-view @fetch-feed="fetchFeed" @user-update="onUserUpdate" :loadingMoments="loadingMoments" :feed="feed" :user="user" :copiedUser="copiedUser" :avatar="avatar">
           </router-view>
         </keep-alive>
       </div>
-
       <!-- 右侧 -->
       <div class="index-right">
         <!-- 右上侧登录块或用户信息块 -->
         <div class="user-block">
-          <user-menu v-if="isLogin" :loginResult="loginResult"></user-menu>
+          <user-menu v-if="_isLogin()"></user-menu>
           <login-form v-else></login-form>
         </div>
-
         <!-- 右下侧标签块 -->
         <div class="top-moments">
           <router-link to="/tags">
@@ -36,7 +34,6 @@
 import LoginForm from '@/components/user/LoginForm'
 import UserMenu from '@/components/user/UserMenu'
 export default {
-  props: ['loginResult', 'isLogin'],
   data() {
     return {
       feed: [],
@@ -83,12 +80,12 @@ export default {
     },
     fetchFeed() {
       //如果登录并且自己的feed没有读取完毕，那么读取用户feed；否则读取热门动态
-      if (this.isLogin && !this.isUserFeedNotEnough) {
+      if (this._isLogin() && !this.isUserFeedNotEnough) {
         console.log('获取用户动态')
         let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
-        let headers = { Authentication: this.loginResult.token }
+        let headers = { Authentication: this._token() }
         this.axios
-          .get(`/users/${this.loginResult.id}/feed`, {
+          .get(`/users/${this._id()}/feed`, {
             params: params,
             headers: headers
           })
@@ -123,12 +120,12 @@ export default {
         })
     },
     fetchUser() {
-      if (!this.isLogin) {
+      if (!this._isLogin()) {
         return
       }
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
-        .get(`/users/${this.loginResult.id}`, { headers: header })
+        .get(`/users/${this._id()}`, { headers: header })
         .then(response => {
           this.user = response.data
           if (this.user.avatar !== null) {

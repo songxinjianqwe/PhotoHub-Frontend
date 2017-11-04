@@ -4,7 +4,7 @@
     <div class="post-block">
         <ul class="post-nav">
         <li class="avatar-li">
-            <user-avatar-uplpad :avatar="avatar" :loginResult="loginResult" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
+            <user-avatar-uplpad :avatar="avatar" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
         </li>
         <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
         <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
@@ -14,7 +14,7 @@
     <!-- 左下侧：动态 -->
     <!-- 父组件向子组件传值既可以通过props，也可以通过事件 -->
     <div class="feed-block" v-loading="loadingMoments">
-        <moment  class="moment" v-for="item in feed" :key="item.id" :moment="item" :loginResult="loginResult" from="feed"></moment>
+        <moment  class="moment" v-for="item in feed" :key="item.id" :moment="item"  from="feed"></moment>
         <el-button @click="fetchFeed">加载更多</el-button>
     </div>
     
@@ -23,12 +23,12 @@
       
     <!-- 新增动态Dialog -->
     <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%">
-      <message-new :loginResult="loginResult" @moment-new-success="onMomentNewSuccess"></message-new>
+      <message-new  @moment-new-success="onMomentNewSuccess"></message-new>
     </el-dialog>
 
     <!-- 新增AlbumDialog -->
     <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%">
-      <album-new :loginResult="loginResult" @album-new-success="onAlbumNewSuccess"></album-new>
+      <album-new @album-new-success="onAlbumNewSuccess"></album-new>
     </el-dialog>
   </div>
 </template>
@@ -40,11 +40,11 @@ import Moment from '@/components/moment/Moment'
 import UserAvatarUplpad from '@/components/user/UserAvatarUpload'
 
 export default {
-  props: ['feed','loginResult','avatar','loadingMoments'],
+  props: ['feed', 'avatar', 'loadingMoments'],
   data() {
     return {
       momentNewDialogVisible: false,
-      albumNewDialogVisible: false,
+      albumNewDialogVisible: false
     }
   },
   methods: {
@@ -55,7 +55,7 @@ export default {
       this.avatar = avatar
       this.user.avatar = avatar
       this.axios
-        .put(`/users/${this.loginResult.id}`, this.user)
+        .put(`/users/${this._id()}`, this.user)
         .then(response => {
           console.log('用户更新完毕')
         })
@@ -65,7 +65,7 @@ export default {
     },
     toTop() {
       //设置定时器
-      let timer =  setInterval(function() {
+      let timer = setInterval(function() {
         //获取滚动条距离顶部高度
         let osTop =
           document.documentElement.scrollTop || document.body.scrollTop
@@ -93,8 +93,8 @@ export default {
         type: 'success'
       })
       this.albumNewDialogVisible = false
-      this.$router.push(`/users/${this.loginResult.id}/albums/${albumId}`)
-    },
+      this.$router.push(`/users/${this._id()}/albums/${albumId}`)
+    }
   },
   components: {
     MessageNew,
@@ -139,7 +139,7 @@ export default {
 .album-li {
   background: url(../../assets/index/album-new.png) no-repeat;
 }
-.moment{
+.moment {
   width: 600px;
   overflow: hidden;
 }

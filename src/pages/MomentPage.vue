@@ -1,18 +1,15 @@
 <template>
     <div class="moment-detail" v-loading="loading">
         <h1 v-if="moment !== null" v-text="moment.user.username"></h1>
-        <moment class="moment" :moment="moment" from="moment-detail" :loginResult="loginResult" v-if="moment !== null"></moment>
+        <moment class="moment" :moment="moment" from="moment-detail" v-if="moment !== null"></moment>
     </div>
 </template>
-
 <script>
 import Moment from '@/components/moment/Moment'
-
 export default {
   data() {
     return {
       moment: null,
-      loginResult: {},
       loading: true
     }
   },
@@ -32,9 +29,6 @@ export default {
   },
   components: {
     Moment
-  },
-  mounted() {
-    this.loginResult = JSON.parse(localStorage.getItem('loginResult'))
   },
   //在/users/:id/index <=> 其他页面 之间跳转时被调用
   beforeRouteEnter(to, from, next) {

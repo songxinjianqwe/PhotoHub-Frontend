@@ -4,19 +4,21 @@
         ref="comments"
         placement="top-start"
         title="评论"
-        width="300"
+        width="400"
         trigger="hover">
         <!-- 显示评论内容 -->
-        <comment class="comment"  :loginResult="loginResult" :moment="moment"></comment>
+        <comment class="comment-detail" :moment="moment" @comment-delete="onCommentDelete"></comment>
       </el-popover>
       <!-- from可选值为user-moments,user-index和feed -->
       <!-- feed是显示在首页的，需要显示动态类型和点赞评论转发 -->
       <!-- user-index是显示在用户主页的 -->
       <!-- user-moments是显示在用户动态页的，需要显示编辑和删除 -->
       <div v-if="from === 'feed'">
-        <router-link :to="`/users/${moment.user.id}/index`">
-          <h4>{{moment.user.username}}</h4>
-        </router-link>
+        <div class="h4-username"> 
+          <router-link :to="`/users/${moment.user.id}/index`" >
+            <span>{{moment.user.username}}</span>
+          </router-link>
+        </div>
         <span v-if="moment.type === 'user'">关注动态</span>  
         <span v-else>热门动态</span>
       </div>
@@ -36,7 +38,7 @@
       <div class="article" v-html="compiledMarkdown"></div>
 
       <!-- 显示在首页 -->
-      <div v-if="from === 'feed' && loginResult !== null">
+      <div v-if=" from === 'feed' && _isLogin()">
         <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
         <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
         <el-button @click="comment"  v-popover:comments>评论({{moment.message.comments.length}})</el-button>
@@ -53,11 +55,13 @@
       <div v-if="from === 'moment-detail'">
         <!-- 没有登录时显示热度和评论 -->
         <span>热度({{moment.message.votes.length}})</span>
-        <comment class="comment"  :loginResult="loginResult" :moment="moment"></comment>
+        <h4>评论</h4>
+        <comment class="comment-detail" :moment="moment" @comment-delete="onCommentDelete"></comment>
         <!-- 登陆后可以点赞评论转发 -->
-        <div v-if="loginResult !== null">
-          <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
-          <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
+        <div v-if="_isLogin()">
+         <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
+         <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
+         <el-button @click="comment">评论({{moment.message.comments.length}})</el-button>
           <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
         </div>
       </div>
@@ -68,13 +72,22 @@ import Marked from 'marked'
 import Comment from '@/components/moment/comment'
 
 export default {
-  props: ['moment', 'loginResult', 'from'],
+  props: ['moment', 'from'],
   data() {
-    return {}
+    return {
+      isVoted: false
+    }
   },
   methods: {
+    voteOrUnVote() {
+      if (this.isVoted) {
+        this.unVote()
+      } else {
+        this.vote()
+      }
+    },
     vote() {
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
         .post(`/messages/${this.moment.message.id}/vote`, null, {
           headers: header
@@ -84,6 +97,7 @@ export default {
             message: '点赞成功',
             type: 'success'
           })
+          this.isVoted = true
           this.moment.message.votes.push(response.data)
         })
         .catch(error => {
@@ -92,20 +106,33 @@ export default {
         })
     },
     unVote() {
-      let header = { Authentication: this.loginResult.token }
+      let voteId = undefined
+      for (let vote of this.moment.message.votes) {
+        if (vote.user.id === this._id()) {
+          voteId = vote.id
+          break
+        }
+      }
+      let header = { Authentication: this._token() }
       this.axios
-        .post(`/messages/${this.moment.message.id}/vote`, null, {
+        .delete(`/messages/${this.moment.message.id}/vote/${voteId}`, {
           headers: header
         })
         .then(response => {
           this.$message({
-            message: '点赞成功',
+            message: '取消点赞成功',
             type: 'success'
           })
-          this.moment.message.votes.push(response.data)
+          for (let i = 0; i < this.moment.message.votes.length; ++i) {
+            if (voteId === this.moment.message.votes[i].id) {
+              this.moment.message.votes.splice(i, 1)
+              break
+            }
+          }
+          this.isVoted = false
         })
         .catch(error => {
-          this.$message.error('点赞失败')
+          this.$message.error('取消点赞失败')
           throw error
         })
     },
@@ -116,7 +143,7 @@ export default {
       })
         .then(({ value }) => {
           let body = { text: value }
-          let header = { Authentication: this.loginResult.token }
+          let header = { Authentication: this._token() }
           this.axios
             .post(`/messages/${this.moment.message.id}/comment`, body, {
               headers: header
@@ -138,6 +165,14 @@ export default {
           throw error
         })
     },
+    onCommentDelete(commentId) {
+      for (let i = 0; i < this.moment.message.comments.length; ++i) {
+        if (commentId === this.moment.message.comments[i].id) {
+          this.moment.message.comments.splice(i, 1)
+          break
+        }
+      }
+    },
     forward() {},
     edit() {
       this.$emit('moment-edit', this.moment)
@@ -149,7 +184,7 @@ export default {
         type: 'warning'
       }).then(() => {
         //先删消息，再删动态
-        let header = { Authentication: this.loginResult.token }
+        let header = { Authentication: this._token() }
         this.axios
           .delete(`/messages/${this.moment.message.id}`, { headers: header })
           .then(response => {
@@ -177,20 +212,18 @@ export default {
   computed: {
     compiledMarkdown() {
       return Marked(this.moment.message.text, { sanitize: true })
-    },
-    //判断自己是否点赞过该动态
-    isVoted() {
-      this.moment.message.votes.forEach(vote => {
-        if (vote.user.id === this.loginResult.id) {
-          return true
-        }
-      })
-      return false
     }
   },
   components: {
     Marked,
     Comment
+  },
+  created() {
+    for (let vote of this.moment.message.votes) {
+      if (vote.user.id === this._id()) {
+        this.isVoted = true
+      }
+    }
   }
 }
 </script>
@@ -208,7 +241,13 @@ export default {
   font-size: 13px;
   color: #999;
 }
-.comment {
-  margin: auto;
+.comment-detail {
+  width: 400px;
+  margin: 0 auto;
+}
+.h4-username {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 </style>

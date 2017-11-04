@@ -25,7 +25,6 @@
 
 <script>
 export default {
-  props: ['loginResult'],
   data() {
     return {
       albumForm: {
@@ -59,10 +58,10 @@ export default {
     },
     onSubmit(){
         this.loading = true
-        this.albumForm.user_id = this.loginResult.id
+        this.albumForm.user_id = this._id()
         console.log('form',this.albumForm)
-        let header  = {Authentication : this.loginResult.token}
-        this.axios.post(`/users/${this.loginResult.id}/albums`,this.albumForm,{headers:header})
+        let header  = {Authentication : this._token()}
+        this.axios.post(`/users/${this._id()}/albums`,this.albumForm,{headers:header})
         .then(response => {
             this.loading = false
             this.$emit('album-new-success',response.data.id);

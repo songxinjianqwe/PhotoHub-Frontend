@@ -21,7 +21,6 @@ export default {
   data() {
     return {
       user: {},
-      loginResult: {},
       moments: [],
       page: 1,
       totalPages: 1,
@@ -30,8 +29,7 @@ export default {
   },
   methods: {
     fetchUser() {
-      this.loginResult = JSON.parse(localStorage.getItem('loginResult'))
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
         .get(`/users/${this.$route.params.id}`, { headers: header })
         .then(response => {
@@ -56,7 +54,7 @@ export default {
         page: this.page,
         'per-page': this.DEFAULE_PER_PAGE
       }
-      let headers = { Authentication: this.loginResult.token }
+      let headers = { Authentication: this._token() }
       this.axios
         .get('/moments', {
           params: params,

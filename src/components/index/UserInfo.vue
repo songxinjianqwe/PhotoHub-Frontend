@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="关注标签" prop="tags">
         <el-checkbox-group v-model="user.tags" size="large" fill="#324057" text-color="#a4aebd">
-          <el-row :gutter="20" v-for="i in Math.ceil(1.0 * tags.length / 5) " :key="i">
+          <el-row :gutter="20" v-for="i in Math.ceil(tags.length / 5) " :key="i">
             <el-checkbox-button v-for="tag in tags.slice((i-1)*5,i*5)" :label="tag.id" :key="tag.id">{{tag.name}}</el-checkbox-button>
           </el-row>
         </el-checkbox-group>
@@ -26,7 +26,6 @@
 
 <script>
 export default {
-  props: ['loginResult'],
   data() {
     return {
       tags: [],
@@ -88,7 +87,7 @@ export default {
       console.log('待更新的表单数据')
       //调用全局函数
       console.log(this.user)
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
         .put(`/users/${this.user.id}`, this.user, { headers: header })
         .then(response => {
@@ -109,9 +108,9 @@ export default {
     },
     fetchUser() {
       console.log('获取用户信息')
-      let header = { Authentication: this.loginResult.token }
+      let header = { Authentication: this._token() }
       this.axios
-        .get(`/users/${this.loginResult.id}`, { headers: header })
+        .get(`/users/${this._id()}`, { headers: header })
         .then(response => {
           this.user = response.data
           this.fetchHotTags()

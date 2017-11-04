@@ -12,29 +12,28 @@
         <div class="header-nav">
           <el-menu class="nav-menu" :default-active="$route.path" :router="true" mode="horizontal" background-color="#24292c" text-color="#999" active-text-color="#ffffff">
             <el-menu-item index="/">首页</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/index'">主页</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/moments'">动态</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/albums'">相册</el-menu-item>
+            <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/index`">主页</el-menu-item>
+            <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/moments`">动态</el-menu-item>
+            <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/albums`">相册</el-menu-item>
             <el-menu-item index="/activities">活动</el-menu-item>
-            <el-menu-item :index="'/users/'+loginResult.id+'/follows'">关注</el-menu-item>
+            <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/follows`">关注</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
-            <el-submenu v-if="isLogin" :index="'/users/'+loginResult.id">
+            <el-submenu v-if="_isLogin()" index="">
               <template slot="title">
                 更多
               </template>
-              <el-menu-item :index="'/users/'+loginResult.id+'/info'">账号设置</el-menu-item>
+              <el-menu-item :index="`/users/${this._id()}/info`">账号设置</el-menu-item>
               <el-menu-item index="" @click="logout">退出登录</el-menu-item>
             </el-submenu>
           </el-menu>
         </div>
       </div>
     </div>
-
     <!-- Content -->
     <div class="app-content">
       <!-- 缓存 -->
       <keep-alive>
-        <router-view :loginResult="loginResult" :isLogin="isLogin"></router-view>
+        <router-view></router-view>
       </keep-alive>
     </div>
   </div>
@@ -44,30 +43,13 @@
 export default {
   data() {
     return {
-      isLogin: false,
-      loginResult: {
-        id: '',
-        token: '',
-        username: ''
-      },
       logoutDialogVisible: false
     }
   },
   methods: {
-    //每次页面刷新都到localStorage查询是否有用户信息
-    checkLoginState() {
-      if (localStorage.getItem('loginResult') !== null) {
-        this.isLogin = true
-        this.loginResult = JSON.parse(localStorage.getItem('loginResult'))
-        console.log('isLogin:', this.isLogin)
-        console.log('loginResult:', this.loginResult)
-      } else {
-        console.log('localStorage为空')
-      }
-    },
     /**当退出登录时，会提示信息，并删除本地的localStorage，本地的内存数据，以及服务器的token */
     logout() {
-      if (!this.isLogin) {
+      if (!this._isLogin()) {
         return
       }
       const h = this.$createElement
@@ -78,13 +60,13 @@ export default {
           {
             style: 'color: teal'
           },
-          '再见，' + this.loginResult.username
+          '再见，' + this._username()
         )
       })
       localStorage.clear('loginResult')
       console.log('删除服务器的token')
       let header = {
-        Authentication: this.loginResult.token
+        Authentication: this._token()
       }
       this.axios
         .delete('/tokens', {
@@ -92,8 +74,6 @@ export default {
         })
         .then(response => {
           console.log(response.data)
-          this.isLogin = false
-          this.loginResult = null
         })
         .catch(error => {
           throw error
@@ -104,10 +84,6 @@ export default {
         window.location.reload()
       }, 2000)
     }
-  },
-  // 当刷新时，检查localStorage，如果有用户数据，说明仍在登录状态
-  created() {
-    this.checkLoginState()
   }
 }
 </script>

@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  props: ['avatar', 'loginResult'],
+  props: ['avatar'],
   data() {
     return {
       avatarUploadDialogVisible: false,
@@ -120,7 +120,7 @@ export default {
   },
   created() {
     if (this.cos === null) {
-      this.cos = this.initCos(this.loginResult.token)
+      this.cos = this.initCos(this._token())
     }
   }
 }

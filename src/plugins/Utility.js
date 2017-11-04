@@ -102,5 +102,32 @@ exports.install = function (Vue, options) {
                     }, delay);
                 }
             }
+        },
+        Vue.prototype._id = function () {
+            let loginResult = localStorage.getItem('loginResult')
+            if (loginResult === null) {
+                return null
+            } else {
+                return JSON.parse(loginResult).id
+            }
+        },
+        Vue.prototype._token = function () {
+            let loginResult = localStorage.getItem('loginResult')
+            if (loginResult === null) {
+                return null
+            } else {
+                return JSON.parse(loginResult).token
+            }
+        },
+        Vue.prototype._username = function () {
+            let loginResult = localStorage.getItem('loginResult')
+            if (loginResult === null) {
+                return null
+            } else {
+                return JSON.parse(loginResult).username
+            }
+        },
+        Vue.prototype._isLogin = function () {
+            return localStorage.getItem('loginResult') !== null
         }
 };
