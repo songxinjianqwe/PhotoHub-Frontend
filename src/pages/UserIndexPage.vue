@@ -8,7 +8,7 @@
       </div>
     </el-aside>
     <el-main id="main-moments">
-      <moment v-for="item in moments" :key="item.id" :moment="item" from="user-index"></moment>
+      <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-index"></moment>
       <el-button @click="fetchMoments">加载更多</el-button>
     </el-main>
   </el-container>
@@ -91,19 +91,19 @@ export default {
   components: {
     Moment
   },
+  //document绑定eventlistener可以在created，document中的某个文档元素绑定eventlistener必须在mounted之后
   mounted() {
-    this.fetchUser()
     document
       .getElementById('main-moments')
       .addEventListener('scroll', this.throttle(this.bindScroll, 2000))
   },
-  //在/products/:id <=> 其他页面 之间跳转时被调用
+  //在/users/:id/index <=> 其他页面 之间跳转时被调用
   beforeRouteEnter(to, from, next) {
     next(vm => {
       console.log('beforeRouteEnter:跳转至', to.path)
       vm.fetchUser()
     })
-  },
+  }
 }
 </script>
 
@@ -126,5 +126,9 @@ export default {
   margin-left: 200px;
   height: 507px;
   overflow: auto;
+}
+.moment{
+  width: 600px;
+  overflow: hidden;
 }
 </style>

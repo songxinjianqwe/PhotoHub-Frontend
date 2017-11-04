@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
     <h1>我的动态</h1>
-    <moment v-for="item in moments" :key="item.id" :moment="item" from="user-moments" :loginResult="loginResult" @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
+    <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-moments" :loginResult="loginResult" @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
     <el-button @click="fetchMoments">加载更多</el-button>
 
     <!-- 编辑动态Dialog -->
@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     onMomentDelete(momentId) {
-      console.log('onMomentDelete',momentId)
+      console.log('onMomentDelete', momentId)
       for (let i = 0; i < this.moments.length; ++i) {
         if (this.moments[i].id === momentId) {
           this.moments.splice(i, 1)
@@ -114,13 +114,16 @@ export default {
       return JSON.parse(JSON.stringify(this.editingMoment))
     }
   },
-  mounted() {
+  created() {
     this.fetchMoments()
     document.addEventListener('scroll', this.throttle(this.bindScroll, 2000))
   }
 }
 </script>
 
-<style>
-
+<style scoped>
+.moment {
+  width: 600px;
+  overflow: hidden;
+}
 </style>

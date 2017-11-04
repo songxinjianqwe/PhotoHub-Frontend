@@ -5,7 +5,7 @@
       <!-- 左侧 -->
       <div class="index-left">
         <keep-alive>
-          <router-view @fetch-feed="fetchFeed" :loadingMoments="loadingMoments" :loginResult="loginResult" :feed="feed" :user="user" :avatar="avatar">
+          <router-view @fetch-feed="fetchFeed" @user-update="onUserUpdate" :loadingMoments="loadingMoments" :loginResult="loginResult" :feed="feed" :user="user" :copiedUser="copiedUser" :avatar="avatar">
           </router-view>
         </keep-alive>
       </div>
@@ -42,13 +42,17 @@ export default {
       feed: [],
       feedPage: 1,
       top10Tags: {},
-      user: {},
+      user: null,
       isUserFeedNotEnough: false,
       avatar: require('../assets/index/avatar.png'),
       loadingMoments: true
     }
   },
   methods: {
+    onUserUpdate(newUser) {
+      this.user = newUser
+      this.$router.push('/')
+    },
     processFeedResponse(response, type) {
       if (response.data.items.length === 0) {
         console.log('本次读取条数为0，重新读取热门动态')
@@ -150,6 +154,11 @@ export default {
     this.fetchTopTags()
     this.fetchUser()
     window.addEventListener('scroll', this.throttle(this.bindScroll, 2000))
+  },
+  computed: {
+    copiedUser() {
+      return Object.assign({}, this.user)
+    }
   },
   components: {
     LoginForm,

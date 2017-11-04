@@ -46,7 +46,7 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputTag
       if (inputValue) {
-        this.albumForm.tags.push(inputValue)
+        this.albumForm.tags.push(inputValue.trim())
       }
       this.inputTagVisible = false
       this.inputTag = ''
@@ -74,6 +74,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

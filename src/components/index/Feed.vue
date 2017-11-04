@@ -14,7 +14,7 @@
     <!-- 左下侧：动态 -->
     <!-- 父组件向子组件传值既可以通过props，也可以通过事件 -->
     <div class="feed-block" v-loading="loadingMoments">
-        <moment v-for="item in feed" :key="item.id" :moment="item" :loginResult="loginResult" from="feed"></moment>
+        <moment  class="moment" v-for="item in feed" :key="item.id" :moment="item" :loginResult="loginResult" from="feed"></moment>
         <el-button @click="fetchFeed">加载更多</el-button>
     </div>
     
@@ -65,7 +65,7 @@ export default {
     },
     toTop() {
       //设置定时器
-      setInterval(function() {
+      let timer =  setInterval(function() {
         //获取滚动条距离顶部高度
         let osTop =
           document.documentElement.scrollTop || document.body.scrollTop
@@ -139,7 +139,10 @@ export default {
 .album-li {
   background: url(../../assets/index/album-new.png) no-repeat;
 }
-
+.moment{
+  width: 600px;
+  overflow: hidden;
+}
 .feed-block {
   margin-top: 200px;
 }

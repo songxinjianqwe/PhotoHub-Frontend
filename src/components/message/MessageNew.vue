@@ -174,7 +174,7 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputTag
       if (inputValue) {
-        this.tags.push(inputValue)
+        this.tags.push(inputValue.trim())
       }
       this.inputTagVisible = false
       this.inputTag = ''
@@ -198,7 +198,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #editor {
   margin: 0 auto;
   width: 100%;

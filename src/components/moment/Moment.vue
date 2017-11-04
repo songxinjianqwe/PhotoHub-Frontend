@@ -6,18 +6,9 @@
         title="评论"
         width="300"
         trigger="hover">
-        <el-table :data="moment.message.comments" style="width: 300">
-          <el-table-column
-            prop="user.username"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="text"
-            width="200">
-          </el-table-column>
-        </el-table>
+        <!-- 显示评论内容 -->
+        <comment class="comment"  :loginResult="loginResult" :moment="moment"></comment>
       </el-popover>
-
       <!-- from可选值为user-moments,user-index和feed -->
       <!-- feed是显示在首页的，需要显示动态类型和点赞评论转发 -->
       <!-- user-index是显示在用户主页的 -->
@@ -29,7 +20,7 @@
         <span v-if="moment.type === 'user'">关注动态</span>  
         <span v-else>热门动态</span>
       </div>
-      <router-link :to="`/moments/${moment.id}`">
+      <router-link v-if="from !== 'moment-detail'" :to="`/moments/${moment.id}`">
         <span class="detail">查看详情</span>
       </router-link>
       <!-- 下面这部分是公共的 -->
@@ -46,7 +37,8 @@
 
       <!-- 显示在首页 -->
       <div v-if="from === 'feed' && loginResult !== null">
-        <el-button @click="vote">点赞({{moment.message.votes.length}})</el-button>
+        <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
+        <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
         <el-button @click="comment"  v-popover:comments>评论({{moment.message.comments.length}})</el-button>
         <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
       </div>
@@ -56,10 +48,24 @@
         <el-button @click="edit">编辑</el-button>
         <el-button @click="remove">删除</el-button>
       </div>
+
+      <!-- 展示在动态详情页 -->
+      <div v-if="from === 'moment-detail'">
+        <!-- 没有登录时显示热度和评论 -->
+        <span>热度({{moment.message.votes.length}})</span>
+        <comment class="comment"  :loginResult="loginResult" :moment="moment"></comment>
+        <!-- 登陆后可以点赞评论转发 -->
+        <div v-if="loginResult !== null">
+          <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
+          <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
+          <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
+        </div>
+      </div>
     </div>
 </template>
 <script>
-import marked from 'marked'
+import Marked from 'marked'
+import Comment from '@/components/moment/comment'
 
 export default {
   props: ['moment', 'loginResult', 'from'],
@@ -68,6 +74,24 @@ export default {
   },
   methods: {
     vote() {
+      let header = { Authentication: this.loginResult.token }
+      this.axios
+        .post(`/messages/${this.moment.message.id}/vote`, null, {
+          headers: header
+        })
+        .then(response => {
+          this.$message({
+            message: '点赞成功',
+            type: 'success'
+          })
+          this.moment.message.votes.push(response.data)
+        })
+        .catch(error => {
+          this.$message.error('点赞失败')
+          throw error
+        })
+    },
+    unVote() {
       let header = { Authentication: this.loginResult.token }
       this.axios
         .post(`/messages/${this.moment.message.id}/vote`, null, {
@@ -152,16 +176,26 @@ export default {
   },
   computed: {
     compiledMarkdown() {
-      return marked(this.moment.message.text, { sanitize: true })
+      return Marked(this.moment.message.text, { sanitize: true })
+    },
+    //判断自己是否点赞过该动态
+    isVoted() {
+      this.moment.message.votes.forEach(vote => {
+        if (vote.user.id === this.loginResult.id) {
+          return true
+        }
+      })
+      return false
     }
   },
   components: {
-    marked
+    Marked,
+    Comment
   }
 }
 </script>
 
-<style>
+<style scoped>
 .detail {
   float: right;
 }
@@ -169,11 +203,12 @@ export default {
   display: block;
   border: 1px solid #ccc;
   margin-bottom: 10px;
-  width: 600px;
-  overflow: hidden;
 }
 .time {
   font-size: 13px;
   color: #999;
+}
+.comment {
+  margin: auto;
 }
 </style>

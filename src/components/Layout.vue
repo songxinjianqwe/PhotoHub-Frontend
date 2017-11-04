@@ -7,7 +7,7 @@
         <router-link to="/" class="logo">
           <h1>PhotoHub</h1>
         </router-link>
-      
+
         <!-- 导航条 -->
         <div class="header-nav">
           <el-menu class="nav-menu" :default-active="$route.path" :router="true" mode="horizontal" background-color="#24292c" text-color="#999" active-text-color="#ffffff">
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Content -->
     <div class="app-content">
       <!-- 缓存 -->
@@ -67,8 +67,8 @@ export default {
     },
     /**当退出登录时，会提示信息，并删除本地的localStorage，本地的内存数据，以及服务器的token */
     logout() {
-      if(!this.isLogin){
-        return 
+      if (!this.isLogin) {
+        return
       }
       const h = this.$createElement
       this.$notify({
@@ -99,8 +99,10 @@ export default {
           throw error
         })
       //回到首页
-      this.$router.push('/')
-      window.location.reload()
+      setTimeout(() => {
+        this.$router.push('/')
+        window.location.reload()
+      }, 2000)
     }
   },
   // 当刷新时，检查localStorage，如果有用户数据，说明仍在登录状态
