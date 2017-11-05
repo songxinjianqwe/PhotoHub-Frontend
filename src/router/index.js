@@ -7,14 +7,16 @@ import RegisterTags from '@/components/register/RegisterTags'
 import RegisterFollows from '@/components/register/RegisterFollows'
 import Error401Page from '@/pages/error-pages/401'
 import Error404Page from '@/pages/error-pages/404'
-import UserIndexPage from '@/pages/UserIndexPage'
+import UserPage from '@/pages/UserPage'
+import UserIndex from '@/components/user/UserIndex'
+import UserAlbum from '@/components/user/UserAlbum'
 
 import Feed from '@/components/index/Feed'
 import UserMoments from '@/components/index/UserMoments'
 import UserInfo from '@/components/index/UserInfo'
-import UserAlbum from '@/components/index/UserAlbum'
-
-import MomentPage from '@/pages/MomentPage'
+import MomentDetailPage from '@/pages/MomentDetailPage'
+import AlbumDetailPage from '@/pages/AlbumDetailPage'
+import ActivityPage from '@/pages/ActivityPage'
 
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
@@ -39,10 +41,6 @@ const router = new Router({
           }
         },
         {
-          path: 'users/:id/albums',
-          component: UserAlbum,
-        },
-        {
           path: 'users/:id/moments',
           component: UserMoments,
           meta: {
@@ -53,12 +51,30 @@ const router = new Router({
       ]
     },
     {
-      path: '/moments/:id',
-      component: MomentPage
+      path: '/users/:id',
+      component: UserPage,
+      children:[
+        {
+          path: 'albums',
+          component: UserAlbum,
+        },
+        {
+          path: 'index',
+          component: UserIndex
+        },
+      ]
     },
     {
-      path: '/users/:id/index',
-      component: UserIndexPage
+      path: '/albums/:id',
+      component: AlbumDetailPage
+    },
+    {
+      path: '/moments/:id',
+      component: MomentDetailPage
+    },
+    {
+      path: '/activities',
+      component: ActivityPage
     },
     {
       path: '/register',

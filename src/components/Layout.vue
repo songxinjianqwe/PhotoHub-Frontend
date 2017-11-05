@@ -7,9 +7,9 @@
         <router-link to="/" class="logo">
           <h1>PhotoHub</h1>
         </router-link>
-
-        <!-- 导航条 -->
+        <!-- 导航栏 -->
         <div class="header-nav">
+          <!-- 导航条 -->
           <el-menu class="nav-menu" :default-active="$route.path" :router="true" mode="horizontal" background-color="#24292c" text-color="#999" active-text-color="#ffffff">
             <el-menu-item index="/">首页</el-menu-item>
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/index`">主页</el-menu-item>
@@ -26,6 +26,15 @@
               <el-menu-item index="" @click="logout">退出登录</el-menu-item>
             </el-submenu>
           </el-menu>
+
+          <!-- 搜索条 -->
+          <el-input id="search" class="nav-search input-with-select" placeholder="请输入标签" v-model="value">
+            <el-select v-model="selectValue" slot="prepend" class="select">
+              <el-option label="动态" value="1"></el-option>
+              <el-option label="相册" value="2"></el-option>
+            </el-select>
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
         </div>
       </div>
     </div>
@@ -43,7 +52,9 @@
 export default {
   data() {
     return {
-      logoutDialogVisible: false
+      logoutDialogVisible: false,
+      selectValue: '1',
+      value: ''
     }
   },
   methods: {
@@ -118,12 +129,12 @@ body {
   width: 220px;
   height: 44px;
 }
-
 .header-nav {
-  float: right;
+  float: left;
   margin: 35px 0 0;
 }
 .nav-menu {
+  float: left;
   position: relative;
   z-index: 65;
   width: 580px;
@@ -133,9 +144,23 @@ body {
   text-align: left;
   border: 0px;
 }
+.nav-search {
+  float: right;
+  position: relative;
+  top: -1px;
+  left: -2px;
+  width: 300px;
+  height: 26px;
+  margin: -36px 0 0;
+  padding: 2px 10px 2px 32px;
+  background-position: 0 -41px;
+  z-index: 65;
+}
 
+.select {
+  width: 80px;
+}
 /* 不可删除 */
-
 a {
   color: inherit;
   text-decoration: none;

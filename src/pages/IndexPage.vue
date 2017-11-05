@@ -32,7 +32,7 @@
 
 <script>
 import LoginForm from '@/components/user/LoginForm'
-import UserMenu from '@/components/user/UserMenu'
+import UserMenu from '@/components/index/UserMenu'
 export default {
   data() {
     return {

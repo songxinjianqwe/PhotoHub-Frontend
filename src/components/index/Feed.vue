@@ -1,7 +1,7 @@
 <<template>
   <div>
     <!-- 左上侧：发表 -->
-    <div class="post-block">
+    <div v-if="_isLogin()" class="post-block">
         <ul class="post-nav">
         <li class="avatar-li">
             <user-avatar-uplpad :avatar="avatar" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
@@ -93,7 +93,7 @@ export default {
         type: 'success'
       })
       this.albumNewDialogVisible = false
-      this.$router.push(`/users/${this._id()}/albums/${albumId}`)
+      this.$router.push(`/albums/${albumId}`)
     }
   },
   components: {
@@ -106,6 +106,9 @@ export default {
 </script>
 
 <style scoped>
+.post-block{
+  margin-bottom: 200px;
+}
 .post-nav {
   position: relative;
   z-index: 9;
@@ -144,7 +147,7 @@ export default {
   overflow: hidden;
 }
 .feed-block {
-  margin-top: 200px;
+  margin-top: 20px;
 }
 #to_top {
   width: 30px;

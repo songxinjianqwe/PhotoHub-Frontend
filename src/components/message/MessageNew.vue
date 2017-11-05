@@ -38,12 +38,13 @@ export default {
   methods: {
     fetchAlbums() {
       let param = {
+        user_id : this._id(),
         page: 1,
         'per-page': 0,
         fields: 'id,name'
       }
       this.axios
-        .get(`/users/${this._id()}/albums`, { params: param })
+        .get(`/albums`, { params: param })
         .then(response => {
           this.albums = response.data.items
           console.log('加载albums成功')

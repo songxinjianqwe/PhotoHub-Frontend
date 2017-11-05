@@ -28,7 +28,7 @@
       <!-- 下面这部分是公共的 -->
       <time class="time">{{ moment.message.create_time }}</time>
       <span>来自相册:
-        <router-link :to="`/users/${moment.user.id}/albums/${moment.album.id}`">{{moment.album.name}}</router-link>
+        <router-link :to="`/albums/${moment.album.id}`">{{moment.album.name}}</router-link>
       </span>
       <el-tag v-for="tag in moment.tags" :key="tag.id">
         <router-link :to="`/tags/${tag.id}`">
