@@ -35,7 +35,7 @@
           {{tag.name}}
         </router-link>
       </el-tag>
-      <div class="article" v-html="compiledMarkdown"></div>
+      <div v-html="compiledMarkdown"></div>
 
       <!-- 显示在首页 -->
       <div v-if=" from === 'feed' && _isLogin()">
@@ -70,7 +70,6 @@
 <script>
 import Marked from 'marked'
 import Comment from '@/components/moment/comment'
-
 export default {
   props: ['moment', 'from'],
   data() {
@@ -227,7 +226,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .detail {
   float: right;

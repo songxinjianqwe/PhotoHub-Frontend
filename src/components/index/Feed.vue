@@ -23,9 +23,9 @@
       
     <!-- 新增动态Dialog -->
     <el-dialog title="新增动态" :visible.sync="momentNewDialogVisible" width="70%">
-      <message-new  @moment-new-success="onMomentNewSuccess"></message-new>
+      <moment-new  @moment-new-success="onMomentNewSuccess"></moment-new>
     </el-dialog>
-
+  
     <!-- 新增AlbumDialog -->
     <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%">
       <album-new @album-new-success="onAlbumNewSuccess"></album-new>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import MessageNew from '@/components/message/MessageNew'
+import MomentNew from '@/components/moment/MomentNew'
 import AlbumNew from '@/components/album/AlbumNew'
 import Moment from '@/components/moment/Moment'
 import UserAvatarUplpad from '@/components/user/UserAvatarUpload'
@@ -97,7 +97,7 @@ export default {
     }
   },
   components: {
-    MessageNew,
+    MomentNew,
     AlbumNew,
     Moment,
     UserAvatarUplpad

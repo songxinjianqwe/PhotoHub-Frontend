@@ -66,7 +66,7 @@ export default {
   mounted() {
     document
       .getElementById('main-content')
-      .addEventListener('scroll', this.throttle(this.bindScroll, 2000))
+      .addEventListener('scroll', this.throttle(this.bindScroll, 5000))
   },
   components: {
     Moment

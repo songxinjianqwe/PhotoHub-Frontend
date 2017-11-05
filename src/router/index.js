@@ -17,6 +17,7 @@ import UserInfo from '@/components/index/UserInfo'
 import MomentDetailPage from '@/pages/MomentDetailPage'
 import AlbumDetailPage from '@/pages/AlbumDetailPage'
 import ActivityPage from '@/pages/ActivityPage'
+import ActivityDetailPage from '@/pages/ActivityDetailPage'
 
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
@@ -75,6 +76,10 @@ const router = new Router({
     {
       path: '/activities',
       component: ActivityPage
+    },
+    {
+      path: '/activities/:id',
+      component:  ActivityDetailPage
     },
     {
       path: '/register',

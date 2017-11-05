@@ -116,7 +116,7 @@ export default {
   },
   created() {
     this.fetchMoments()
-    document.addEventListener('scroll', this.throttle(this.bindScroll, 2000))
+    document.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
   }
 }
 </script>

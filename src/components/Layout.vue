@@ -102,11 +102,10 @@ export default {
 <style>
 body {
   font-size: 14px;
-  color: #444;
   min-height: 100%;
   margin: 0;
   padding: 0;
-  position: relative;
+  background-color: #EDEDEF
 }
 
 /* header */

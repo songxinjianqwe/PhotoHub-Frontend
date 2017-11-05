@@ -1,7 +1,7 @@
 <template>
     <div class="moment-detail" v-loading="loading">
         <h1 v-if="moment !== null" v-text="moment.user.username"></h1>
-        <moment class="moment" :moment="moment" from="moment-detail" v-if="moment !== null"></moment>
+        <moment v-if="moment !== null" class="moment" :moment="moment" from="moment-detail" ></moment>
     </div>
 </template>
 <script>

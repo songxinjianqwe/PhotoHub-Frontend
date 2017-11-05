@@ -150,7 +150,7 @@ export default {
     }
     this.fetchTopTags()
     this.fetchUser()
-    window.addEventListener('scroll', this.throttle(this.bindScroll, 2000))
+    window.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
   },
   computed: {
     copiedUser() {
