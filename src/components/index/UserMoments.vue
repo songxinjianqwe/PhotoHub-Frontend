@@ -72,11 +72,9 @@ export default {
         page: this.page,
         'per-page': this.DEFAULE_PER_PAGE
       }
-      let headers = { Authentication: this._token() }
       this.axios
         .get('/moments', {
-          params: params,
-          headers: headers
+          params: params
         })
         .then(response => {
           this.totalPages = response.data._meta.pageCount

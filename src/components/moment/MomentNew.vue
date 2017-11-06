@@ -57,9 +57,8 @@ export default {
         message_id: messageId,
         tags: this.tags
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .post('/moments', body, { headers: header })
+        .post('/moments', body)
         .then(response => {
           console.log('新增moment')
           console.log(response.data)

@@ -9,6 +9,7 @@
 <script>
 import MessageNew from '@/components/message/MessageNew'
 export default {
+  props:['activity'],
   data() {
     return {
       loading: false,
@@ -19,18 +20,16 @@ export default {
     onMessageNewSuccess(messageId) {
       let body = {
         user_id: this._id(),
-        title: this.title,
-        message_id: messageId
+        message_id: messageId,
+        activity_id: this.activity.id
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .post('/activities', body, { headers: header })
+        .post(`/activities/${this.activity.id}/replies`, body)
         .then(response => {
-          console.log('新增activity')
+          console.log('新增activityReply')
           console.log(response.data)
           this.loading = false                                      
-          this.$emit('activity-new-success', response.data)
-          this.title = ''
+          this.$emit('activity-reply-new-success', response.data)
         })
         .catch(error => {
           throw error

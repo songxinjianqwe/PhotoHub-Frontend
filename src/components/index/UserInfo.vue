@@ -87,9 +87,8 @@ export default {
       console.log('待更新的表单数据')
       //调用全局函数
       console.log(this.user)
-      let header = { Authentication: this._token() }
       this.axios
-        .put(`/users/${this.user.id}`, this.user, { headers: header })
+        .put(`/users/${this.user.id}`, this.user)
         .then(response => {
           console.log('更新完毕')
           this.$message({
@@ -108,9 +107,8 @@ export default {
     },
     fetchUser() {
       console.log('获取用户信息')
-      let header = { Authentication: this._token() }
       this.axios
-        .get(`/users/${this._id()}`, { headers: header })
+        .get(`/users/${this._id()}`)
         .then(response => {
           this.user = response.data
           this.fetchHotTags()

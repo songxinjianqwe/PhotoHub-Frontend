@@ -53,19 +53,19 @@ export default {
           localStorage.setItem('loginResult', JSON.stringify(response.data))
           setTimeout(() => {
             //跳转回主页
-            this.$router.push('/')
+            if ('redirect' in this.$route.query) {
+              this.$router.push(this.$route.query.redirect)
+            }
             //刷新当前页面
             window.location.reload()
           }, 2000)
         })
         .catch(error => {
           console.log(error)
-          if ('response' in error) {
-            this.$notify.error({
-              title: '登录失败',
-              message: '用户名或密码错误'
-            })
-          }
+          this.$notify.error({
+            title: '登录失败',
+            message: '用户名或密码错误'
+          })
         })
     },
     resetForm() {

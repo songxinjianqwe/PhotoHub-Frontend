@@ -86,11 +86,8 @@ export default {
       }
     },
     vote() {
-      let header = { Authentication: this._token() }
       this.axios
-        .post(`/messages/${this.moment.message.id}/vote`, null, {
-          headers: header
-        })
+        .post(`/messages/${this.moment.message.id}/vote`)
         .then(response => {
           this.$message({
             message: '点赞成功',
@@ -112,11 +109,8 @@ export default {
           break
         }
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .delete(`/messages/${this.moment.message.id}/vote/${voteId}`, {
-          headers: header
-        })
+        .delete(`/messages/${this.moment.message.id}/vote/${voteId}`)
         .then(response => {
           this.$message({
             message: '取消点赞成功',
@@ -142,11 +136,8 @@ export default {
       })
         .then(({ value }) => {
           let body = { text: value }
-          let header = { Authentication: this._token() }
           this.axios
-            .post(`/messages/${this.moment.message.id}/comment`, body, {
-              headers: header
-            })
+            .post(`/messages/${this.moment.message.id}/comment`, body)
             .then(response => {
               this.$message({
                 message: '评论成功',
@@ -183,9 +174,8 @@ export default {
         type: 'warning'
       }).then(() => {
         //先删消息，再删动态
-        let header = { Authentication: this._token() }
         this.axios
-          .delete(`/messages/${this.moment.message.id}`, { headers: header })
+          .delete(`/messages/${this.moment.message.id}`)
           .then(response => {
             this.axios
               .delete(`/moments/${this.moment.id}`, { headers: header })

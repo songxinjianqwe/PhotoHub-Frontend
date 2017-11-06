@@ -74,9 +74,8 @@ export default {
           tags: this.album.tags,
           user_id: this.album.user.id
         }
-        let header = { Authentication: this._token() }
         this.axios
-          .put(`/albums/${this.album.id}`, body, { headers: header })
+          .put(`/albums/${this.album.id}`, body)
           .then(response => {
             this.$message({
               type: 'success',
@@ -95,9 +94,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let header = { Authentication: this._token() }
         this.axios
-          .delete(`/albums/${this.album.id}`, { headers: header })
+          .delete(`/albums/${this.album.id}`)
           .then(response => {
             this.$message({
               type: 'success',

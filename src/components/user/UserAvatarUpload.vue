@@ -120,7 +120,7 @@ export default {
   },
   created() {
     if (this.cos === null) {
-      this.cos = this.initCos(this._token())
+      this.cos = this.initCos()
     }
   }
 }

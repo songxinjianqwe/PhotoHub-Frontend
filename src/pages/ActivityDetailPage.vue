@@ -1,17 +1,22 @@
 <template>
   <div class="activity-detail" v-loading="loading">
-    <h1 v-if="activity !== null " v-text="activity.title"></h1>
+    <h1 v-if="activity !== null" v-text="activity.title"></h1>
     <div v-if="activity !== null" v-html="compiledMarkdown"></div>
+    <el-button v-if="_isAdmin()" @click="remove">删除活动</el-button>
     <el-button @click="activityReplyNewDialogVisible = true">参与活动</el-button>
     <el-dialog class="activity-reply-new" title="新增活动回复" :visible.sync="activityReplyNewDialogVisible" width="70%">
-      <activity-reply-new @activity-reply-new-success="onActivityReplyNewSuccess"></activity-reply-new>
+      <activity-reply-new :activity="activity" @activity-reply-new-success="onActivityReplyNewSuccess"></activity-reply-new>
     </el-dialog>
+    <div v-if="activity !== null" class="activity-reply">
+      <activity-reply :activityId="activity.id" @activity-reply-remove="onReplyRemoved" v-for="reply in activity.replies" :key="reply.id" :reply="reply"></activity-reply>
+    </div>
   </div>
 </template>
-
 <script>
 import Marked from 'marked'
 import ActivityReplyNew from '@/components/activity/ActivityReplyNew'
+import ActivityReply from '@/components/activity/ActivityReply'
+
 export default {
   data() {
     return {
@@ -21,10 +26,45 @@ export default {
     }
   },
   methods: {
-    onActivityReplyNewSuccess(){
-
+    onActivityReplyNewSuccess(reply) {
+      this.activityReplyNewDialogVisible = false
+      this.activity.replies.push(reply)
+      this.$message({
+        message: '回复成功',
+        type: 'success'
+      })
+    },
+    onReplyRemoved(replyId) {
+      for (let i = 0; i < this.activity.replies.length; ++i) {
+        if (this.activity.replies[i].id == replyId) {
+          this.activity.replies.splice(i, 1)
+          break
+        }
+      }
+    },
+    remove() {
+      this.$confirm('此操作将永久删除该活动以及其所有回复, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios
+          .delete(`/activities/${this.$route.params.id}`)
+          .then(response => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.$router.push('/activities')
+          })
+          .catch(error => {
+            this.$message.error('删除失败')
+            throw error
+          })
+      })
     },
     fetchActivity() {
+      this.loading = true
       this.axios
         .get(`/activities/${this.$route.params.id}`)
         .then(response => {
@@ -32,13 +72,15 @@ export default {
           this.loading = false
         })
         .catch(error => {
+          this.loading = false
           throw error
         })
     }
   },
   components: {
     Marked,
-    ActivityReplyNew
+    ActivityReplyNew,
+    ActivityReply
   },
   computed: {
     compiledMarkdown() {
@@ -60,6 +102,14 @@ export default {
   margin-left: 200px;
   margin-right: 200px;
   text-align: center;
-  background-color:#FFFFFF;
+  background-color: #ffffff;
+}
+.thumbnail {
+  width: 125px;
+  height: 125px;
+}
+.activity-reply {
+  margin-top: 20px;
+  border: 1px solid #00a2e8;
 }
 </style>

@@ -10,7 +10,7 @@
         <el-col :span="10" v-for="(activity, index) in activities.slice((row-1)*2,row*2)" :key="activity.id" :offset="index > 0 ? 2 : 0">
           <!-- 一个Album -->
           <el-card class="activity-card" :body-style="{ padding: '0px' }">
-            <activity @activity-new-success="onActivityNewSuccess" :activity="activity" :key="activity.id"></activity>
+            <activity :activity="activity" :key="activity.id"></activity>
           </el-card>
         </el-col>
       </el-row>
@@ -96,6 +96,14 @@ export default {
     Activity,
     ActivityNew
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      console.log('beforeRouteEnter:跳转至', to.path)
+      vm.page = 0
+      vm.activities = []
+      vm.fetchActivities()
+    })
+  },
   //document绑定eventlistener可以在created，document中的某个文档元素绑定eventlistener必须在mounted之后
   created() {
     window.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
@@ -117,5 +125,8 @@ export default {
 }
 .activity-new {
   text-align: left;
+}
+.activity-card{
+  width: 400px;
 }
 </style>

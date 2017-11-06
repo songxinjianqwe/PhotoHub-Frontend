@@ -23,9 +23,8 @@ export default {
         title: this.title,
         message_id: messageId
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .post('/activities', body, { headers: header })
+        .post('/activities', body)
         .then(response => {
           console.log('新增activity')
           console.log(response.data)

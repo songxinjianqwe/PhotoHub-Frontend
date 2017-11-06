@@ -76,13 +76,8 @@ export default {
       })
       localStorage.clear('loginResult')
       console.log('删除服务器的token')
-      let header = {
-        Authentication: this._token()
-      }
       this.axios
-        .delete('/tokens', {
-          headers: header
-        })
+        .delete('/tokens')
         .then(response => {
           console.log(response.data)
         })

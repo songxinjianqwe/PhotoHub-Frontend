@@ -60,8 +60,7 @@ export default {
         this.loading = true
         this.albumForm.user_id = this._id()
         console.log('form',this.albumForm)
-        let header  = {Authentication : this._token()}
-        this.axios.post(`/albums`,this.albumForm,{headers:header})
+        this.axios.post(`/albums`,this.albumForm)
         .then(response => {
             this.loading = false
             this.$emit('album-new-success',response.data.id);

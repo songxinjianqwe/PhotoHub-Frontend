@@ -16,7 +16,6 @@
     <el-button @click="publish" type="primary" :disabled="text === ''">发 表</el-button>
   </div>
 </template>
-
 <script>
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
@@ -44,7 +43,7 @@ export default {
     fetchAlbums() {
       console.log('加载albums')
       let param = {
-        user_id : this._id(),
+        user_id: this._id(),
         page: 1,
         'per-page': 0,
         fields: 'id,name'
@@ -118,10 +117,7 @@ export default {
       for (let key in this.images) {
         console.log('this.images[key].name', this.images[key].name)
         if (this.images[key].name === fileName) {
-          this.text = this.text.replace(
-            key,
-            result.data.source_url
-          )
+          this.text = this.text.replace(key, result.data.source_url)
         }
       }
       //全部上传完毕
@@ -135,11 +131,8 @@ export default {
         text: this.text,
         user_id: this._id()
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .put(`/messages/${this.messageId}`, body, {
-          headers: header
-        })
+        .put(`/messages/${this.messageId}`, body)
         .then(response => {
           console.log('修改message')
           console.log(response.data)
@@ -221,7 +214,7 @@ export default {
   },
   created() {
     if (this.cos === null) {
-      this.cos = this.initCos(this._token())
+      this.cos = this.initCos()
     }
     this.copyValue()
     this.fetchAlbums()

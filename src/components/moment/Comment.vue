@@ -30,11 +30,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let headers = { Authentication: this._token() }
         this.axios
-          .delete(`/messages/${this.moment.message.id}/comment/${comment.id}`, {
-            headers
-          })
+          .delete(`/messages/${this.moment.message.id}/comment/${comment.id}`)
           .then(response => {
             this.$message({
               message: '删除成功',

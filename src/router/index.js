@@ -5,7 +5,7 @@ import RegisterPage from '@/pages/RegisterPage'
 import RegisterForm from '@/components/register/RegisterForm'
 import RegisterTags from '@/components/register/RegisterTags'
 import RegisterFollows from '@/components/register/RegisterFollows'
-import Error401Page from '@/pages/error-pages/401'
+import Error403Page from '@/pages/error-pages/403'
 import Error404Page from '@/pages/error-pages/404'
 import UserPage from '@/pages/UserPage'
 import UserIndex from '@/components/user/UserIndex'
@@ -18,7 +18,7 @@ import MomentDetailPage from '@/pages/MomentDetailPage'
 import AlbumDetailPage from '@/pages/AlbumDetailPage'
 import ActivityPage from '@/pages/ActivityPage'
 import ActivityDetailPage from '@/pages/ActivityDetailPage'
-
+import { Message } from 'element-ui'
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
 // 在创建的 router 对象中，如果不配置 mode，就会使用默认的 hash 模式，该模式下会将路径格式化为 #! 开头。
@@ -101,8 +101,8 @@ const router = new Router({
       ]
     },
     {
-      path: '/error/401',
-      component: Error401Page
+      path: '/error/403',
+      component: Error403Page
     },
     {
       path: '*',
@@ -128,7 +128,8 @@ router.beforeEach((to, from, next) => {
         next()
       } else {
         console.log('不是本人访问')
-        next('/error/401')
+        Message.error('非来自本人的请求，拒绝访问')
+        next('/error/403')
       }
     } else {
       // 如果登录，那么放行

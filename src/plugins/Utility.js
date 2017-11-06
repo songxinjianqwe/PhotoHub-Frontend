@@ -32,7 +32,7 @@ exports.install = function (Vue, options) {
             }
             return new Blob([u8arr], { type: mime });
         },
-        Vue.prototype.initCos = function (token) {
+        Vue.prototype.initCos = function () {
             console.log("初始化cos");
             let cos = new CosCloud({
                 appid: 1252651195, // APPID 必填参数
@@ -41,9 +41,8 @@ exports.install = function (Vue, options) {
                 getAppSign: callback => {
                     console.log("getAppSign")
                     console.log("尝试获取服务器token")
-                    let header = { Authentication: token }
                     this.axios
-                        .get("/tokens/cos", { headers: header })
+                        .get("/tokens/cos")
                         .then(response => {
                             console.log("cos获取服务器token 成功", response.data)
                             callback(response.data)
@@ -129,5 +128,13 @@ exports.install = function (Vue, options) {
         },
         Vue.prototype._isLogin = function () {
             return localStorage.getItem('loginResult') !== null
+        },
+        Vue.prototype._isAdmin = function () {
+            let loginResult = localStorage.getItem('loginResult')
+            if (loginResult === null) {
+                return null
+            } else {
+                return JSON.parse(loginResult).isAdmin
+            }
         }
 };

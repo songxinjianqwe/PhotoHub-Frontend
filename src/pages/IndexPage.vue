@@ -83,16 +83,15 @@ export default {
       if (this._isLogin() && !this.isUserFeedNotEnough) {
         console.log('获取用户动态')
         let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
-        let headers = { Authentication: this._token() }
         this.axios
           .get(`/users/${this._id()}/feed`, {
-            params: params,
-            headers: headers
+            params: params
           })
           .then(response => {
             this.processFeedResponse(response, 'user')
           })
           .catch(error => {
+            this.loadingMoments = false
             throw error
           })
       } else {
@@ -123,9 +122,8 @@ export default {
       if (!this._isLogin()) {
         return
       }
-      let header = { Authentication: this._token() }
       this.axios
-        .get(`/users/${this._id()}`, { headers: header })
+        .get(`/users/${this._id()}`)
         .then(response => {
           this.user = response.data
           if (this.user.avatar !== null) {

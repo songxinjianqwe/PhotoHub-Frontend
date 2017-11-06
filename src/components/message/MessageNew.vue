@@ -17,6 +17,7 @@ export default {
   },
   methods: {
     onPublish() {
+      console.log('有',Object.keys(this.images).length,'张图片待上传')
       if (Object.keys(this.images).length > 0) {
         this.uploadimages()
       } else {
@@ -25,8 +26,7 @@ export default {
     },
     newMessage() {
       let body = { text: this.text, user_id: this._id() }
-      let header = { Authentication: this._token() }
-      this.axios.post('/messages', body, { headers: header }).then(response => {
+      this.axios.post('/messages', body).then(response => {
         console.log('新增message')
         console.log(response.data)
         this.clearVals()
@@ -37,7 +37,6 @@ export default {
       this.successCount = 0
       this.text = ''
       this.images = {}
-      this.tags = []
     },
     imgAdd(pos, $file) {
       this.images[pos] = $file
@@ -78,7 +77,7 @@ export default {
       console.log('上传成功')
       console.log(result.data.source_url)
       let slices = result.data.source_url.split('/')
-      let fileName = slices[slices.length - 1]
+      let fileName = decodeURI(slices[slices.length - 1])
       console.log('fileName', fileName)
       for (let key in this.images) {
         console.log('this.images[key].name', this.images[key].name)
@@ -89,8 +88,9 @@ export default {
       //全部上传完毕
       if (
         this.successCount ===
-        Object.getOwnPropertyNames(this.images).length - 1
+        Object.keys(this.images).length
       ) {
+        console.log('全部上传完毕')
         this.newMessage()
       }
     },
@@ -104,7 +104,7 @@ export default {
   },
   created() {
     if (this.cos === null) {
-      this.cos = this.initCos(this._token())
+      this.cos = this.initCos()
     }
     this.$nextTick(() => {
       this.$on('publish', this.onPublish)
