@@ -4,6 +4,7 @@
             <router-link :to="`/users/${reply.user.id}/index`">
                 {{reply.user.username}}
             </router-link>
+            <follow-button :target="reply.user.id"></follow-button>
         </div>
         <router-link :to="`/users/${reply.user.id}/index`">
             <img class="avatar" :src="reply.user.avatar" />
@@ -15,6 +16,7 @@
 
 <script>
 import Marked from 'marked'
+import FollowButton from '@/components/follow/FollowButton'
 export default {
   props: ['activityId', 'reply'],
   methods: {
@@ -45,7 +47,8 @@ export default {
     }
   },
   components: {
-    Marked
+    Marked,
+    FollowButton
   }
 }
 </script>

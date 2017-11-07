@@ -11,8 +11,6 @@
   </div>
 </template>
 <script>
-//this.$router.push
-//this.$route.params
 export default {
   data() {
     return {

@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <mavon-editor style="height: 100%" v-model="text" @imgAdd="imgAdd" @imgDel="imgDel"></mavon-editor><br>
-    </div>
+  <div>
+    <mavon-editor style="height: 100%" v-model="text" @imgAdd="imgAdd" @imgDel="imgDel"></mavon-editor><br>
+  </div>
 </template>
 <script>
 import { mavonEditor } from 'mavon-editor'
@@ -26,13 +26,19 @@ export default {
       }
     },
     editMessage() {
-      let body = { text: this.text, user_id: this._id() ,id: this.messageFromParent.id}
-      this.axios.put(`/messages/${this.messageFromParent.id}`, body).then(response => {
-        console.log('修改message')
-        console.log(response.data)
-        this.clearVals()
-        this.$emit('message-edit-success')
-      })
+      let body = {
+        text: this.text,
+        user_id: this._id(),
+        id: this.messageFromParent.id
+      }
+      this.axios
+        .put(`/messages/${this.messageFromParent.id}`, body)
+        .then(response => {
+          console.log('修改message')
+          console.log(response.data)
+          this.clearVals()
+          this.$emit('message-edit-success')
+        })
     },
     clearVals() {
       this.successCount = 0
@@ -98,13 +104,21 @@ export default {
       console.log('result:', result)
       this.$message.error('修改失败')
       this.clearVals()
+    },
+    copyValue() {
+      this.text = this.messageFromParent.text
+    }
+  },
+  watch: {
+    messageFromParent() {
+      this.copyValue()
     }
   },
   created() {
     if (this.cos === null) {
       this.cos = this.initCos()
     }
-    this.text = this.messageFromParent.text
+    this.copyValue()
     this.$nextTick(() => {
       this.$on('publish', this.onPublish)
     })

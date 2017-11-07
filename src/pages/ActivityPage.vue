@@ -33,12 +33,13 @@ export default {
       activities: [],
       page: 1,
       totalPages: 1,
-      activitiesLoading: false,
-      activityNewDialogVisible: false
+      activitiesLoading: true,
+      activityNewDialogVisible: false,
+      fetchComplete: true
     }
   },
   methods: {
-    onModeChange(){
+    onModeChange() {
       this.page = 1
       this.activities = []
       this.activitiesLoading = true
@@ -61,7 +62,11 @@ export default {
         })
         return
       }
-      this.activitiesLoading = true
+      if (!this.fetchComplete) {
+        return
+      }
+      this.$message('加载中...')
+      this.fetchComplete = false
       let params = {
         page: this.page,
         'per-page': 6
@@ -80,15 +85,16 @@ export default {
             type: 'success'
           })
           this.activitiesLoading = false
+          this.fetchComplete = true
         })
         .catch(error => {
+          this.fetchComplete = true
           throw error
         })
     },
     bindScroll() {
       if (this.isScrollInBottom() && this.$route.path === '/activities') {
         console.log('UserIndexPage bindScroll triggered...')
-        this.$message('加载中...')
         this.fetchActivities()
       }
     }
@@ -100,15 +106,15 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       console.log('beforeRouteEnter:跳转至', to.path)
-      vm.page = 0
-      vm.activities = []
       vm.fetchActivities()
     })
   },
   //document绑定eventlistener可以在created，document中的某个文档元素绑定eventlistener必须在mounted之后
   created() {
-    window.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
-    this.fetchActivities()
+    window.addEventListener(
+      'scroll',
+      this.throttle(this.bindScroll, this.DEFAULE_LOAD_INTERVAL)
+    )
   }
 }
 </script>
@@ -119,7 +125,7 @@ export default {
   margin-right: 200px;
   text-align: center;
   margin-top: 20px;
-  background-color:#FFFFFF;
+  background-color: #ffffff;
 }
 .radio {
   text-align: left;
@@ -127,7 +133,7 @@ export default {
 .activity-new {
   text-align: left;
 }
-.activity-card{
+.activity-card {
   width: 400px;
 }
 </style>

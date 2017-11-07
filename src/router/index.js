@@ -13,11 +13,17 @@ import UserAlbum from '@/components/user/UserAlbum'
 
 import Feed from '@/components/index/Feed'
 import UserMoments from '@/components/index/UserMoments'
+import UserFollow from '@/components/index/UserFollow'
 import UserInfo from '@/components/index/UserInfo'
+
 import MomentDetailPage from '@/pages/MomentDetailPage'
 import AlbumDetailPage from '@/pages/AlbumDetailPage'
 import ActivityPage from '@/pages/ActivityPage'
 import ActivityDetailPage from '@/pages/ActivityDetailPage'
+import TagPage from '@/pages/TagPage'
+import TagDetailPage from '@/pages/TagDetailPage'
+import AdminPage from '@/pages/AdminPage'
+
 import { Message } from 'element-ui'
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
@@ -48,7 +54,16 @@ const router = new Router({
             requiresAuth: true,
             requiresMySelf: true
           }
-        }
+        },
+        {
+          path: 'users/:id/follows',
+          component: UserFollow,
+          meta: {
+            requiresAuth: true,
+            requiresMySelf: true
+          }
+        },
+        
       ]
     },
     {
@@ -80,6 +95,18 @@ const router = new Router({
     {
       path: '/activities/:id',
       component:  ActivityDetailPage
+    },
+    {
+      path: '/tags',
+      component: TagPage
+    },
+    {
+      path: '/tags/:id',
+      component: TagDetailPage
+    },
+    {
+      path: '/admin',
+      component: AdminPage
     },
     {
       path: '/register',

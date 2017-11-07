@@ -1,43 +1,33 @@
 <template>
   <el-main id="main-content" v-loading="loading">
+    <div v-if="$route.params.id == _id()">
+      <el-button @click="albumNewDialogVisible = true">创建相册</el-button>
+    </div>
     <el-row v-for="row in Math.ceil(this.albums.length / 2)" :key="row">
       <el-col :span="10" v-for="(album, index) in albums.slice((row-1)*2,row*2)" :key="album.id" :offset="index > 0 ? 2 : 0">
         <!-- 一个Album -->
         <el-card class="album-card" :body-style="{ padding: '0px' }">
-          <div>
-            <router-link :to="`/albums/${album.id}`">
-              <span class="album-name">{{album.name}}</span>
-            </router-link>
-          </div>
-          <div>
-            <time class="time">{{ album.create_time }}</time>
-          </div>
-          <el-tag v-for="tag in album.tags" :key="tag.id">
-            <router-link :to="`/tags/${tag.id}`">
-              {{tag.name}}
-            </router-link>
-          </el-tag>
-          <!-- 显示6张图片 -->
-          <table>
-            <tr v-for="row in 2" :key="row">
-              <td v-for="col in 3" :key="col">
-                <img class="thumbnail" :src="album.thumbnails[( row - 1 )*2 + col -1 ]"></img>
-              </td>
-            </tr>
-          </table>
+          <album :album="album"></album>
         </el-card>
       </el-col>
     </el-row>
+     <!-- 新增AlbumDialog -->
+    <el-dialog title="新增相册" :visible.sync="albumNewDialogVisible" width="30%">
+      <album-new @album-new-success="onAlbumNewSuccess"></album-new>
+    </el-dialog>
   </el-main>
 </template>
 <script>
+import Album from '@/components/album/Album'
+import AlbumNew from '@/components/album/AlbumNew'
 export default {
   data() {
     return {
       albums: [],
       loading: false,
       inputTag: '',
-      inputTagVisible: false
+      inputTagVisible: false,
+      albumNewDialogVisible: false
     }
   },
   methods: {
@@ -54,7 +44,19 @@ export default {
         .catch(error => {
           throw error
         })
+    },
+    onAlbumNewSuccess(album) {
+      this.$message({
+        message: '创建成功',
+        type: 'success'
+      })
+      this.albumNewDialogVisible = false
+      this.albums.push(album)
     }
+  },
+  components:{
+    Album,
+    AlbumNew
   },
   //在/users/:id/index <=> 其他页面 之间跳转时被调用
   beforeRouteEnter(to, from, next) {
@@ -71,18 +73,7 @@ export default {
   height: 507px;
   overflow: auto;
 }
-.time {
-  font-size: 13px;
-  color: #999;
-}
-.album-name {
-  font-size: 18px;
-  font-weight: bold;
-}
-.thumbnail {
-  width: 125px;
-  height: 125px;
-}
+
 .album-card{
   width: 400px;
 }

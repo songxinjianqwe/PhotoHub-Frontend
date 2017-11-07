@@ -15,9 +15,10 @@
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/index`">主页</el-menu-item>
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/moments`">动态</el-menu-item>
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/albums`">相册</el-menu-item>
-            <el-menu-item index="/activities">活动</el-menu-item>
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/follows`">关注</el-menu-item>
+            <el-menu-item index="/activities">活动</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
+            <el-menu-item v-if="_isAdmin()"index="/admin">管理员</el-menu-item>
             <el-submenu v-if="_isLogin()" index="">
               <template slot="title">
                 更多
@@ -28,12 +29,13 @@
           </el-menu>
 
           <!-- 搜索条 -->
-          <el-input id="search" class="nav-search input-with-select" placeholder="请输入标签" v-model="value">
+          <el-input id="search" class="nav-search input-with-select" placeholder="请输入标签或用户名" v-model="value">
             <el-select v-model="selectValue" slot="prepend" class="select">
               <el-option label="动态" value="1"></el-option>
               <el-option label="相册" value="2"></el-option>
+              <el-option label="用户" value="3"></el-option>
             </el-select>
-            <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
           </el-input>
         </div>
       </div>
@@ -89,6 +91,9 @@ export default {
         this.$router.push('/')
         window.location.reload()
       }, 2000)
+    },
+    search(){
+      console.log('search')
     }
   }
 }
@@ -131,7 +136,7 @@ body {
   float: left;
   position: relative;
   z-index: 65;
-  width: 580px;
+  width: 670px;
   height: 48px;
   padding: 22px 5px 0 0;
   margin: -36px 0 0;
@@ -142,7 +147,7 @@ body {
   float: right;
   position: relative;
   top: -1px;
-  left: -2px;
+  left: 0px;
   width: 300px;
   height: 26px;
   margin: -36px 0 0;
@@ -150,7 +155,6 @@ body {
   background-position: 0 -41px;
   z-index: 65;
 }
-
 .select {
   width: 80px;
 }

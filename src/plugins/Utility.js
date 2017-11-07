@@ -136,5 +136,6 @@ exports.install = function (Vue, options) {
             } else {
                 return JSON.parse(loginResult).isAdmin
             }
-        }
+        },
+        Vue.prototype.DEFAULE_LOAD_INTERVAL = 200
 };

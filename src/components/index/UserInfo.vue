@@ -23,7 +23,6 @@
     </el-form>
   </div>
 </template>
-
 <script>
 export default {
   data() {
@@ -75,12 +74,6 @@ export default {
       })
         .then(() => {
           this.onModify()
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消修改'
-          })
         })
     },
     onModify() {

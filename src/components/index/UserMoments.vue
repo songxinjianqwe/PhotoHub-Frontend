@@ -21,9 +21,10 @@ export default {
       moments: [],
       page: 1,
       totalPages: 1,
-      loading: false,
+      loading: true,
       momentEditDialogVisible: false,
-      editingMoment: {}
+      editingMoment: {},
+      fetchComplete: true
     }
   },
   methods: {
@@ -57,8 +58,6 @@ export default {
       }
     },
     fetchMoments() {
-      this.loading = true
-      console.log(this.user)
       if (this.page > this.totalPages) {
         this.$message({
           showClose: true,
@@ -67,6 +66,11 @@ export default {
         })
         return
       }
+      if (!this.fetchComplete) {
+        return
+      }
+      this.fetchComplete = false
+      this.$message('加载中...')
       let params = {
         user_id: this._id(),
         page: this.page,
@@ -86,9 +90,11 @@ export default {
             message: '加载动态完毕',
             type: 'success'
           })
+          this.fetchComplete = true
         })
         .catch(error => {
           this.loading = false
+          this.fetchComplete = true
           throw error
         })
     },
@@ -98,7 +104,6 @@ export default {
         userMomentsPattern.test(this.$route.path)
       ) {
         console.log('UserIndexPage bindScroll triggered...')
-        this.$message('加载中...')
         this.fetchMoments()
       }
     }
@@ -109,7 +114,10 @@ export default {
   },
   created() {
     this.fetchMoments()
-    document.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
+    document.addEventListener(
+      'scroll',
+      this.throttle(this.bindScroll, this.DEFAULE_LOAD_INTERVAL)
+    )
   }
 }
 </script>

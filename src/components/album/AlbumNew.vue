@@ -63,7 +63,7 @@ export default {
         this.axios.post(`/albums`,this.albumForm)
         .then(response => {
             this.loading = false
-            this.$emit('album-new-success',response.data.id);
+            this.$emit('album-new-success',response.data);
         }).catch(error =>{
             throw error
         })

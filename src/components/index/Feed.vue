@@ -4,7 +4,7 @@
     <div v-if="_isLogin()" class="post-block">
         <ul class="post-nav">
         <li class="avatar-li">
-            <user-avatar-uplpad :avatar="avatar" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
+            <user-avatar-uplpad v-if="user !== null" :avatar="user.avatar" @avatar-upload-success="onAvatarUploadSuccess"></user-avatar-uplpad>
         </li>
         <li class="moment-li" @click="momentNewDialogVisible = true">发表动态</li>
         <li class="album-li" @click="albumNewDialogVisible = true">创建相册</li>
@@ -14,7 +14,7 @@
     <!-- 左下侧：动态 -->
     <!-- 父组件向子组件传值既可以通过props，也可以通过事件 -->
     <div class="feed-block" v-loading="loadingMoments">
-        <moment class="moment" v-for="item in feed" :key="item.id" :moment="item"  from="feed"></moment>
+        <moment class="moment" v-for="item in feed" :key="item.id" :moment="item" from="feed"></moment>
         <el-button @click="fetchFeed">加载更多</el-button>
     </div>
     
@@ -40,24 +40,30 @@ import Moment from '@/components/moment/Moment'
 import UserAvatarUplpad from '@/components/user/UserAvatarUpload'
 
 export default {
-  props: ['feed', 'avatar', 'loadingMoments'],
+  props: ['user'],
   data() {
     return {
+      feed: [],
+      feedPage: 1,
+      isUserFeedNotEnough: false,
       momentNewDialogVisible: false,
-      albumNewDialogVisible: false
+      albumNewDialogVisible: false,
+      loadingMoments: true,
+      fetchComplete: true
     }
   },
   methods: {
-    fetchFeed() {
-      this.$emit('fetch-feed')
-    },
     onAvatarUploadSuccess(avatar) {
-      this.avatar = avatar
       this.user.avatar = avatar
       this.axios
         .put(`/users/${this._id()}`, this.user)
         .then(response => {
-          console.log('用户更新完毕')
+          console.log('用户头像更新完毕')
+          this.$message({
+            type: 'success',
+            message: '头像更换成功!'
+          })
+          this.$emit('user-update', response.data)
         })
         .catch(error => {
           throw error
@@ -94,6 +100,73 @@ export default {
       })
       this.albumNewDialogVisible = false
       this.$router.push(`/albums/${albumId}`)
+    },
+    processFeedResponse(response, type) {
+      this.fetchComplete = true
+      if (response.data.items.length === 0) {
+        console.log('本次读取条数为0，重新读取热门动态')
+        this.isUserFeedNotEnough = true
+        this.feedPage = 1
+        this.fetchFeed()
+        return
+      }
+      response.data.items.forEach(item => {
+        item['type'] = type
+        this.feed.push(item)
+      })
+      console.log('获取动态成功')
+      console.log(this.feed)
+      this.$message({
+        message: '加载动态完毕',
+        type: 'success'
+      })
+      //已经读完
+      if (response.data.items.length < this.DEFAULE_PER_PAGE) {
+        console.log('本次读取条数少于一页，下次读取热门动态')
+        this.isUserFeedNotEnough = true
+        this.feedPage = 1
+      } else {
+        this.feedPage++
+      }
+      this.loadingMoments = false
+      
+    },
+    fetchFeed() {
+      if (!this.fetchComplete) {
+        return
+      }
+      this.$message('加载中...')
+      this.fetchComplete = false
+      //如果登录并且自己的feed没有读取完毕，那么读取用户feed；否则读取热门动态
+      if (this._isLogin() && !this.isUserFeedNotEnough) {
+        console.log('获取用户动态')
+        let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
+        this.axios
+          .get(`/users/${this._id()}/feed`, {
+            params: params
+          })
+          .then(response => {
+            this.processFeedResponse(response, 'user')
+          })
+          .catch(error => {
+            this.loadingMoments = false
+            this.fetchComplete = true
+            throw error
+          })
+      } else {
+        console.log('获取热门动态')
+        let params = { page: this.feedPage, 'per-page': this.DEFAULE_PER_PAGE }
+        this.axios
+          .get('/moments/hot', { params: params })
+          .then(response => {
+            this.processFeedResponse(response, 'hot')
+          })
+          .catch(error => {
+            this.loadingMoments = false
+            this.fetchComplete = true
+            throw error
+          })
+      }
     }
   },
   components: {
@@ -101,6 +174,12 @@ export default {
     AlbumNew,
     Moment,
     UserAvatarUplpad
+  },
+  created() {
+    this.fetchFeed()
+    this.$nextTick(() => {
+      this.$on('feed-fetch', this.fetchFeed)
+    })
   }
 }
 </script>

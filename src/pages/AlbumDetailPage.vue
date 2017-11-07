@@ -5,44 +5,42 @@
       <div class="album-info" v-loading="albumLoading">
         <div>
           <span class="album-name">{{album.name}}</span>
-          <!-- 必须是自己才能编辑 -->
-          <el-button v-show="_isLogin() && album.user.id == _id()" @click="changeAlbumName">重命名</el-button>
         </div>
         <div>
           <time class="time">{{ album.create_time }}</time>
         </div>
         <span>{{album.description}}</span>
-        <!-- 必须是自己才能编辑 -->
-        <el-button v-show="_isLogin() && album.user.id == _id()" @click="changeAlbumDesc">修改简介</el-button>
         <div>
-          <el-tag :key="tag.id" v-for="tag in album.tags" :closable="true" :disable-transitions="false" @close="handleClose(tag.name)">
-            {{tag.name}}
+          <el-tag :key="tag.id" v-for="tag in album.tags">
+            <router-link :to="`/tags/${tag.id}`">
+              {{tag.name}}
+            </router-link>
           </el-tag>
-          <!-- 必须是自己才能编辑 -->
-          <div v-show="_isLogin() && album.user.id == _id()">
-            <el-input style="width: 100px" class="input-new-tag" v-if="inputTagVisible" v-model="inputTag" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
-            </el-input>
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-          </div>
         </div>
         <!-- 必须是自己才能编辑 -->
         <div v-show="_isLogin() && album.user.id == _id()">
-          <el-button @click="modify">修改</el-button>
+          <el-button @click="albumEditDialogVisible = true">修改</el-button>
           <el-button @click="remove">删除</el-button>
         </div>
       </div>
     </el-aside>
+
     <!-- 右侧 -->
     <el-main id="main-content" v-loading="momentsLoading">
       <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="album-detail"></moment>
       <el-button @click="fetchMoments">加载更多</el-button>
     </el-main>
+
+    <el-dialog title="修改相册" :visible.sync="albumEditDialogVisible" width="30%">
+      <album-edit :albumFromParent="album" @album-edit-success="onAlbumEditSuccess"></album-edit>
+    </el-dialog>
   </el-container>
 </template>
-
 <script>
 const userIndexPattern = new RegExp('/albums/\\d+')
 import Moment from '@/components/moment/Moment'
+import AlbumEdit from '@/components/album/AlbumEdit'
+
 export default {
   data() {
     return {
@@ -57,36 +55,15 @@ export default {
       inputTag: '',
       inputTagVisible: false,
       albumLoading: false,
-      momentsLoading: false
+      momentsLoading: true,
+      albumEditDialogVisible: false,
+      fetchComplete: true
     }
   },
   methods: {
-    modify() {
-      this.$confirm('此操作将修改该相册, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        let body = {
-          id: this.album.id,
-          name: this.album.name,
-          description: this.album.description,
-          tags: this.album.tags,
-          user_id: this.album.user.id
-        }
-        this.axios
-          .put(`/albums/${this.album.id}`, body)
-          .then(response => {
-            this.$message({
-              type: 'success',
-              message: '修改成功'
-            })
-          })
-          .catch(error => {
-            this.$message.error('修改失败')
-            throw error
-          })
-      })
+    onAlbumEditSuccess(newAlbum) {
+      this.album = newAlbum
+      this.albumEditDialogVisible = false
     },
     remove() {
       this.$confirm('此操作将删除该相册以及相册内的所有动态, 是否继续?', '提示', {
@@ -101,32 +78,16 @@ export default {
               type: 'success',
               message: '删除成功'
             })
-            this.$router.push('/')
+            this.$router.push(`/users/${this.album.user.id}/albums`)
           })
           .catch(error => {
-            if(error.response.status == 400){
+            if (error.response.status == 400) {
               this.$message.error('默认相册不可删除')
-            }else{
+            } else {
               this.$message.error('删除失败')
             }
             throw error
           })
-      })
-    },
-    changeAlbumName() {
-      this.$prompt('请输入新的相册名', '重命名', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(({ value }) => {
-        this.album.name = value
-      })
-    },
-    changeAlbumDesc() {
-      this.$prompt('请输入新的简介', '修改简介', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(({ value }) => {
-        this.album.description = value
       })
     },
     fetchAlbum() {
@@ -138,19 +99,26 @@ export default {
           this.albumLoading = false
         })
         .catch(error => {
+          this.albumLoading = false
           throw error
         })
     },
     fetchMoments() {
-      this.momentsLoading = true
+      console.log('开始加载动态')
       if (this.page > this.totalPages) {
         this.$message({
           showClose: true,
           message: '已无更多动态',
           type: 'warning'
         })
+        console.log('已无更多动态')
         return
       }
+      if(!this.fetchComplete){
+        return 
+      }
+      this.fetchComplete = false
+      this.$message('加载中...')
       let params = {
         album_id: this.$route.params.id,
         page: this.page,
@@ -170,40 +138,13 @@ export default {
             type: 'success'
           })
           this.momentsLoading = false
+          this.fetchComplete = true
         })
         .catch(error => {
+          this.momentsLoading = false
+          this.fetchComplete = true
           throw error
         })
-    },
-    //处理标签
-    handleClose(tagName) {
-      console.log('关闭标签', tagName)
-      let index = -1
-      for (let i = 0; i < this.album.tags.length; ++i) {
-        if (this.album.tags[i].name === tagName) {
-          console.log('找到了', i)
-          index = i
-          break
-        }
-      }
-      if (index !== -1) {
-        this.album.tags.splice(index, 1)
-        console.log('删除后的数组', this.album.tags)
-      }
-    },
-    handleInputConfirm() {
-      let inputValue = this.inputTag
-      if (inputValue) {
-        this.album.tags.push({ name: inputValue.trim() })
-      }
-      this.inputTagVisible = false
-      this.inputTag = ''
-    },
-    showInput() {
-      this.inputTagVisible = true
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus()
-      })
     },
     bindScroll() {
       if (
@@ -211,7 +152,7 @@ export default {
         userIndexPattern.test(this.$route.path)
       ) {
         console.log('UserIndexPage bindScroll triggered...')
-        this.$message('加载中...')
+        
         this.fetchMoments()
       }
     }
@@ -220,10 +161,11 @@ export default {
   mounted() {
     document
       .getElementById('main-content')
-      .addEventListener('scroll', this.throttle(this.bindScroll, 5000))
+      .addEventListener('scroll', this.throttle(this.bindScroll,  this.DEFAULE_LOAD_INTERVAL))
   },
   components: {
-    Moment
+    Moment,
+    AlbumEdit
   },
   //在/albums/:id <=> 其他页面 之间跳转时被调用
   beforeRouteEnter(to, from, next) {

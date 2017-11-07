@@ -2,26 +2,34 @@
   <div class="activity-detail" v-loading="loading">
     <h1 v-if="activity !== null" v-text="activity.title"></h1>
     <div v-if="activity !== null" v-html="compiledMarkdown"></div>
+    <el-button v-if="_isAdmin()" @click="activityEditDialogVisible = true">编辑活动</el-button>
     <el-button v-if="_isAdmin()" @click="remove">删除活动</el-button>
     <el-button @click="activityReplyNewDialogVisible = true">参与活动</el-button>
+    <!-- 新增活动回复Dialog -->
     <el-dialog class="activity-reply-new" title="新增活动回复" :visible.sync="activityReplyNewDialogVisible" width="70%">
       <activity-reply-new :activity="activity" @activity-reply-new-success="onActivityReplyNewSuccess"></activity-reply-new>
     </el-dialog>
     <div v-if="activity !== null" class="activity-reply">
       <activity-reply :activityId="activity.id" @activity-reply-remove="onReplyRemoved" v-for="reply in activity.replies" :key="reply.id" :reply="reply"></activity-reply>
     </div>
+    <!-- 修改活动Dialog -->
+    <el-dialog class="activity-edit" title="修改活动回复" :visible.sync="activityEditDialogVisible" width="70%">
+      <activity-edit :activityFromParent="activity" @activity-edit-success="onActivityEditSuccess"></activity-edit>
+    </el-dialog>
   </div>
 </template>
 <script>
 import Marked from 'marked'
 import ActivityReplyNew from '@/components/activity/ActivityReplyNew'
 import ActivityReply from '@/components/activity/ActivityReply'
+import ActivityEdit from '@/components/activity/ActivityEdit'
 
 export default {
   data() {
     return {
       activity: null,
       activityReplyNewDialogVisible: false,
+      activityEditDialogVisible: false,
       loading: false
     }
   },
@@ -31,6 +39,14 @@ export default {
       this.activity.replies.push(reply)
       this.$message({
         message: '回复成功',
+        type: 'success'
+      })
+    },
+    onActivityEditSuccess(newActivity) {
+      this.activity = newActivity
+      this.activityEditDialogVisible = false
+      this.$message({
+        message: '修改成功',
         type: 'success'
       })
     },
@@ -80,7 +96,8 @@ export default {
   components: {
     Marked,
     ActivityReplyNew,
-    ActivityReply
+    ActivityReply,
+    ActivityEdit
   },
   computed: {
     compiledMarkdown() {

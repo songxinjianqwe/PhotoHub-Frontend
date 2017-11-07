@@ -14,7 +14,8 @@ export default {
       moments: [],
       page: 1,
       totalPages: 1,
-      loading: false
+      loading: true,
+      fetchComplete: true
     }
   },
   methods: {
@@ -27,7 +28,12 @@ export default {
         })
         return
       }
-      this.loading = true
+      if(!this.fetchComplete){
+        return
+      }
+      this.fetchComplete = false
+      this.$message('加载中...')
+
       let params = {
         user_id: this.$route.params.id,
         page: this.page,
@@ -47,9 +53,11 @@ export default {
             type: 'success'
           })
           this.loading = false
+          this.fetchComplete = true
         })
         .catch(error => {
           this.loading = false
+          this.fetchComplete = true
           throw error
         })
     },
@@ -59,7 +67,6 @@ export default {
         userIndexPattern.test(this.$route.path)
       ) {
         console.log('UserIndexPage bindScroll triggered...')
-        this.$message('加载中...')
         this.fetchMoments()
       }
     }
@@ -68,7 +75,7 @@ export default {
   mounted() {
     document
       .getElementById('main-content')
-      .addEventListener('scroll', this.throttle(this.bindScroll, 5000))
+      .addEventListener('scroll', this.throttle(this.bindScroll,  this.DEFAULE_LOAD_INTERVAL))
   },
   components: {
     Moment

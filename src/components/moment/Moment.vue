@@ -18,6 +18,7 @@
           <router-link :to="`/users/${moment.user.id}/index`" >
             <span>{{moment.user.username}}</span>
           </router-link>
+          <follow-button :target="moment.user.id"></follow-button>
         </div>
         <span v-if="moment.type === 'user'">关注动态</span>  
         <span v-else>热门动态</span>
@@ -70,6 +71,8 @@
 <script>
 import Marked from 'marked'
 import Comment from '@/components/moment/comment'
+import FollowButton from '@/components/follow/FollowButton'
+
 export default {
   props: ['moment', 'from'],
   data() {
@@ -205,7 +208,8 @@ export default {
   },
   components: {
     Marked,
-    Comment
+    Comment,
+    FollowButton
   },
   created() {
     for (let vote of this.moment.message.votes) {
