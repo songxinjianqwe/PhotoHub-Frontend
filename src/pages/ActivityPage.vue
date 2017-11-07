@@ -33,7 +33,7 @@ export default {
       activities: [],
       page: 1,
       totalPages: 1,
-      activitiesLoading: true,
+      activitiesLoading: false,
       activityNewDialogVisible: false
     }
   },
@@ -61,6 +61,7 @@ export default {
         })
         return
       }
+      this.activitiesLoading = true
       let params = {
         page: this.page,
         'per-page': 6

@@ -14,7 +14,7 @@ export default {
       moments: [],
       page: 1,
       totalPages: 1,
-      loading: true
+      loading: false
     }
   },
   methods: {
@@ -27,6 +27,7 @@ export default {
         })
         return
       }
+      this.loading = true
       let params = {
         user_id: this.$route.params.id,
         page: this.page,
@@ -48,6 +49,7 @@ export default {
           this.loading = false
         })
         .catch(error => {
+          this.loading = false
           throw error
         })
     },

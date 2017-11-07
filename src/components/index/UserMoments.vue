@@ -1,19 +1,18 @@
 <template>
   <div v-loading="loading">
     <h1>我的动态</h1>
-    <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-moments"  @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
+    <moment class="moment" v-for="item in moments" :key="item.id" :moment="item" from="user-moments" @moment-edit="onMomentEdit" @moment-delete="onMomentDelete"></moment>
     <el-button @click="fetchMoments">加载更多</el-button>
-
     <!-- 编辑动态Dialog -->
     <el-dialog title="编辑动态" :visible.sync="momentEditDialogVisible" width="70%">
-      <message-edit :copiedMoment="copiedMoment" @moment-edit-success="onMomentEditSuccess"></message-edit>
+      <moment-edit :momentFromParent="editingMoment" @moment-edit-success="onMomentEditSuccess"></moment-edit>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import Moment from '@/components/moment/Moment'
-import MessageEdit from '@/components/message/MessageEdit'
+import MomentEdit from '@/components/moment/MomentEdit'
 const userMomentsPattern = new RegExp('/users/\\d+\\/moments')
 export default {
   props: ['user'],
@@ -22,9 +21,9 @@ export default {
       moments: [],
       page: 1,
       totalPages: 1,
-      loading: true,
+      loading: false,
       momentEditDialogVisible: false,
-      editingMoment: null
+      editingMoment: {}
     }
   },
   methods: {
@@ -48,7 +47,7 @@ export default {
         type: 'success'
       })
       this.momentEditDialogVisible = false
-      this.editingMoment = null
+      this.editingMoment = {}
 
       for (let i = 0; i < this.moments.length; ++i) {
         if (this.moments[i].id === newMoment.id) {
@@ -58,6 +57,7 @@ export default {
       }
     },
     fetchMoments() {
+      this.loading = true
       console.log(this.user)
       if (this.page > this.totalPages) {
         this.$message({
@@ -88,6 +88,7 @@ export default {
           })
         })
         .catch(error => {
+          this.loading = false
           throw error
         })
     },
@@ -104,13 +105,7 @@ export default {
   },
   components: {
     Moment,
-    MessageEdit
-  },
-  computed: {
-    //深拷贝
-    copiedMoment() {
-      return JSON.parse(JSON.stringify(this.editingMoment))
-    }
+    MomentEdit
   },
   created() {
     this.fetchMoments()

@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside class="aside">
-      <div class="user-info">
+      <div class="user-info" v-loading="userLoading">
         <img :src="user.avatar" />
         <h2>{{user.username}}</h2>
         <div v-text="user.introduction"></div>
@@ -30,17 +30,21 @@
 export default {
   data() {
     return {
-      user: {}
+      user: {},
+      userLoading: false
     }
   },
   methods: {
     fetchUser() {
+      this.userLoading = true
       this.axios
         .get(`/users/${this.$route.params.id}`)
         .then(response => {
           this.user = response.data
+          this.userLoading = false
         })
         .catch(error => {
+          this.userLoading = false
           throw error
         })
     }

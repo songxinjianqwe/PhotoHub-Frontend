@@ -56,8 +56,8 @@ export default {
       moments: [],
       inputTag: '',
       inputTagVisible: false,
-      albumLoading: true,
-      momentsLoading: true
+      albumLoading: false,
+      momentsLoading: false
     }
   },
   methods: {
@@ -130,6 +130,7 @@ export default {
       })
     },
     fetchAlbum() {
+      this.albumLoading = true
       this.axios
         .get(`/albums/${this.$route.params.id}`)
         .then(response => {
@@ -141,6 +142,7 @@ export default {
         })
     },
     fetchMoments() {
+      this.momentsLoading = true
       if (this.page > this.totalPages) {
         this.$message({
           showClose: true,

@@ -45,8 +45,8 @@
         <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
       </div>
 
-      <!-- 显示在用户动态页 -->
-      <div v-if="from === 'user-moments'">
+      <!-- 显示在用户动态页和动态详情页 -->
+      <div v-if="from === 'user-moments' || from === 'moment-detail'">
         <el-button @click="edit">编辑</el-button>
         <el-button @click="remove">删除</el-button>
       </div>
@@ -178,7 +178,7 @@ export default {
           .delete(`/messages/${this.moment.message.id}`)
           .then(response => {
             this.axios
-              .delete(`/moments/${this.moment.id}`, { headers: header })
+              .delete(`/moments/${this.moment.id}`)
               .then(response => {
                 this.$message({
                   message: '删除成功',

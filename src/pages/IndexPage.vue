@@ -5,7 +5,7 @@
       <!-- 左侧 -->
       <div class="index-left">
         <keep-alive>
-          <router-view @fetch-feed="fetchFeed" @user-update="onUserUpdate" :loadingMoments="loadingMoments" :feed="feed" :user="user" :copiedUser="copiedUser" :avatar="avatar">
+          <router-view @fetch-feed="fetchFeed" @user-update="onUserUpdate" :loadingMoments="loadingMoments" :feed="feed" :user="user" :avatar="avatar">
           </router-view>
         </keep-alive>
       </div>
@@ -42,7 +42,7 @@ export default {
       user: null,
       isUserFeedNotEnough: false,
       avatar: require('../assets/index/avatar.png'),
-      loadingMoments: true
+      loadingMoments: false
     }
   },
   methods: {
@@ -79,6 +79,7 @@ export default {
       this.loadingMoments = false
     },
     fetchFeed() {
+      this.loadingMoments = true
       //如果登录并且自己的feed没有读取完毕，那么读取用户feed；否则读取热门动态
       if (this._isLogin() && !this.isUserFeedNotEnough) {
         console.log('获取用户动态')
@@ -103,6 +104,7 @@ export default {
             this.processFeedResponse(response, 'hot')
           })
           .catch(error => {
+            this.loadingMoments = false
             throw error
           })
       }
@@ -149,11 +151,6 @@ export default {
     this.fetchTopTags()
     this.fetchUser()
     window.addEventListener('scroll', this.throttle(this.bindScroll, 5000))
-  },
-  computed: {
-    copiedUser() {
-      return Object.assign({}, this.user)
-    }
   },
   components: {
     LoginForm,

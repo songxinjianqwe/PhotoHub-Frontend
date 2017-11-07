@@ -21,7 +21,6 @@
           <table>
             <tr v-for="row in 2" :key="row">
               <td v-for="col in 3" :key="col">
-                
                 <img class="thumbnail" :src="album.thumbnails[( row - 1 )*2 + col -1 ]"></img>
               </td>
             </tr>
@@ -36,13 +35,14 @@ export default {
   data() {
     return {
       albums: [],
-      loading: true,
+      loading: false,
       inputTag: '',
       inputTagVisible: false
     }
   },
   methods: {
     fetchAlbums() {
+      this.loading = true
       let params = { user_id: this.$route.params.id,page: 1, 'per-page': 4 }
       this.axios
         .get(`/albums`, { params })

@@ -22,7 +22,7 @@ export default {
     return {
       activity: null,
       activityReplyNewDialogVisible: false,
-      loading: true
+      loading: false
     }
   },
   methods: {

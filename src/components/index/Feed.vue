@@ -14,7 +14,7 @@
     <!-- 左下侧：动态 -->
     <!-- 父组件向子组件传值既可以通过props，也可以通过事件 -->
     <div class="feed-block" v-loading="loadingMoments">
-        <moment  class="moment" v-for="item in feed" :key="item.id" :moment="item"  from="feed"></moment>
+        <moment class="moment" v-for="item in feed" :key="item.id" :moment="item"  from="feed"></moment>
         <el-button @click="fetchFeed">加载更多</el-button>
     </div>
     
@@ -106,7 +106,7 @@ export default {
 </script>
 
 <style scoped>
-.post-block{
+.post-block {
   margin-bottom: 200px;
 }
 .post-nav {
