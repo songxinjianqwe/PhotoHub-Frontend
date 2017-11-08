@@ -101,7 +101,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .moment-new {
   margin: 0 auto;
   width: 100%;

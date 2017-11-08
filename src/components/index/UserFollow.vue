@@ -1,9 +1,9 @@
 <template>
-    <div class="follow" v-loading="loading">
-        <h1>我的关注</h1>
-        <follow-group @follow-group-edit-success="onFollowGroupEditSuccess" @follow-group-remove-success="onFollowGroupRemoveSuccess" v-for="group in groups" :key="group.id" :group="group"></follow-group>
-        <el-button @click="newFollowGroup">添加分组</el-button>
-    </div>
+  <div class="follow" v-loading="loading">
+    <h1>我的关注</h1>
+    <follow-group @follow-group-edit-success="onFollowGroupEditSuccess" @follow-group-remove-success="onFollowGroupRemoveSuccess" v-for="group in groups" :key="group.id" :group="group"></follow-group>
+    <el-button @click="newFollowGroup">添加分组</el-button>
+  </div>
 </template>
 
 <script>
@@ -78,6 +78,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

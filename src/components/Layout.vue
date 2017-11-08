@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="app-header">
+    <div class="app-header" @keyup.enter="search">
       <div class="app-header-inner">
         <!-- LOGO -->
         <router-link to="/" class="logo">
@@ -18,7 +18,7 @@
             <el-menu-item v-if="_isLogin()" :index="`/users/${this._id()}/follows`">关注</el-menu-item>
             <el-menu-item index="/activities">活动</el-menu-item>
             <el-menu-item index="/tags">标签</el-menu-item>
-            <el-menu-item v-if="_isAdmin()"index="/admin">管理员</el-menu-item>
+            <el-menu-item v-if="_isAdmin()" index="/admin">管理员</el-menu-item>
             <el-submenu v-if="_isLogin()" index="">
               <template slot="title">
                 更多
@@ -29,13 +29,12 @@
           </el-menu>
 
           <!-- 搜索条 -->
-          <el-input id="search" class="nav-search input-with-select" placeholder="请输入标签或用户名" v-model="value">
-            <el-select v-model="selectValue" slot="prepend" class="select">
-              <el-option label="动态" value="1"></el-option>
-              <el-option label="相册" value="2"></el-option>
-              <el-option label="用户" value="3"></el-option>
+          <el-input v-loading.fullscreen.lock="searchLoading" class="nav-search input-with-select" placeholder="请输入标签或用户名" v-model="keyword">
+            <el-select v-model="searchOption" slot="prepend" class="select">
+              <el-option label="标签" value="tags"></el-option>
+              <el-option label="用户" value="users"></el-option>
             </el-select>
-            <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+            <el-button :disabled="keyword === ''" slot="append" icon="el-icon-search" @click="search"></el-button>
           </el-input>
         </div>
       </div>
@@ -55,8 +54,9 @@ export default {
   data() {
     return {
       logoutDialogVisible: false,
-      selectValue: '1',
-      value: ''
+      searchOption: 'tags',
+      keyword: '',
+      searchLoading: false
     }
   },
   methods: {
@@ -92,8 +92,36 @@ export default {
         window.location.reload()
       }, 2000)
     },
-    search(){
-      console.log('search')
+    search() {
+      if (this.searchOption === 'users') {
+        this.handleSearchUsers()
+      } else if (this.searchOption === 'tags') {
+        this.handleSearchTags()
+      }
+    },
+    handleSearchUsers(){
+      this.$router.push({path: '/search/users', query: {keyword: this.keyword}})
+    },
+    handleSearchTags() {
+      this.searchLoading = true
+      let params = { keyword: this.keyword }
+      this.axios
+        .get(`${this.searchOption}/search`, { params })
+        .then(response => {
+          console.log('搜索成功,将跳转至:', response.data)
+          this.searchLoading = false
+          if (response.data === this.$route.path) {
+            this.$message('搜索结果即为当前页面')
+          } else {
+            this.$router.push(response.data)
+          }
+        })
+        .catch(error => {
+          console.log('搜索失败')
+          this.searchLoading = false
+          this.$message.error('查询失败,请重新输入关键字')
+          this.keyword = ''
+        })
     }
   }
 }
@@ -105,7 +133,7 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #EDEDEF
+  background-color: #ededef;
 }
 
 /* header */

@@ -1,19 +1,19 @@
 <template>
-    <div>
-        <h3 class="group-name" @click="isDetailed = !isDetailed">{{group.group_name}}({{group.follows.length}})</h3>
-        <el-collapse-transition>
-            <div v-show="isDetailed">
-                <el-button @click="editGroup">修改分组名</el-button>
-                <el-button @click="removeGroup">删除该分组</el-button>
-                <div v-for="follow in group.follows" :key="follow.id">
-                    <router-link :to="`/users/${follow.followedUser.id}/index`">
-                        <h4>{{follow.followedUser.username}}</h4>
-                    </router-link>
-                    <el-button @click="unFollow(follow.followedUser.id)">取关</el-button>
-                </div>
-            </div>
-        </el-collapse-transition>
-    </div>
+  <div>
+    <h3 class="group-name" @click="isDetailed = !isDetailed">{{group.group_name}}({{group.follows.length}})</h3>
+    <el-collapse-transition>
+      <div v-show="isDetailed">
+        <el-button @click="editGroup">修改分组名</el-button>
+        <el-button @click="removeGroup">删除该分组</el-button>
+        <div v-for="follow in group.follows" :key="follow.id">
+          <router-link :to="`/users/${follow.followedUser.id}/index`">
+            <h4>{{follow.followedUser.username}}</h4>
+          </router-link>
+          <el-button @click="unFollow(follow.followedUser.id)">取关</el-button>
+        </div>
+      </div>
+    </el-collapse-transition>
+  </div>
 </template>
 
 <script>

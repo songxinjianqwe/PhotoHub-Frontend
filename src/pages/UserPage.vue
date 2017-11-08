@@ -15,6 +15,7 @@
               <i class="el-icon-document"></i>
               <span slot="title">查看相册</span>
             </el-menu-item>
+            <follow-button :target="user.id"></follow-button>
           </el-menu>
         </div>
       </div>
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import FollowButton from '@/components/follow/FollowButton'
 export default {
   data() {
     return {
@@ -48,6 +50,9 @@ export default {
           throw error
         })
     }
+  },
+  components:{
+    FollowButton
   },
   //在/users/:id/index或albums <=> 其他页面 之间跳转时被调用
   beforeRouteEnter(to, from, next) {

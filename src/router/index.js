@@ -24,6 +24,8 @@ import TagPage from '@/pages/TagPage'
 import TagDetailPage from '@/pages/TagDetailPage'
 import AdminPage from '@/pages/AdminPage'
 
+import UserSearchPage from '@/pages/search/UserSearchPage'
+
 import { Message } from 'element-ui'
 Vue.use(Router)
 // main.js引入了VueRouter，所有的页面路由都写到router/index.js这个文件里
@@ -63,13 +65,13 @@ const router = new Router({
             requiresMySelf: true
           }
         },
-        
+
       ]
     },
     {
       path: '/users/:id',
       component: UserPage,
-      children:[
+      children: [
         {
           path: 'albums',
           component: UserAlbum,
@@ -94,7 +96,7 @@ const router = new Router({
     },
     {
       path: '/activities/:id',
-      component:  ActivityDetailPage
+      component: ActivityDetailPage
     },
     {
       path: '/tags',
@@ -103,6 +105,10 @@ const router = new Router({
     {
       path: '/tags/:id',
       component: TagDetailPage
+    }, 
+    {
+      path: '/search/users',
+      component: UserSearchPage
     },
     {
       path: '/admin',

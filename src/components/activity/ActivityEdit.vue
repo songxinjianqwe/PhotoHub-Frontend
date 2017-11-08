@@ -58,7 +58,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .activity-new {
   margin: 0 auto;
   width: 100%;

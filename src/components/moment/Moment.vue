@@ -9,7 +9,7 @@
         <!-- 显示评论内容 -->
         <comment class="comment-detail" :moment="moment" @comment-delete="onCommentDelete"></comment>
       </el-popover>
-      <!-- from可选值为user-moments,user-index和feed -->
+      
       <!-- feed是显示在首页的，需要显示动态类型和点赞评论转发 -->
       <!-- user-index是显示在用户主页的 -->
       <!-- user-moments是显示在用户动态页的，需要显示编辑和删除 -->
@@ -43,7 +43,7 @@
         <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
         <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
         <el-button @click="comment"  v-popover:comments>评论({{moment.message.comments.length}})</el-button>
-        <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
+        <el-button>转发({{moment.message.forwards.length}})</el-button>
       </div>
 
       <!-- 显示在用户动态页和动态详情页 -->
@@ -63,7 +63,7 @@
          <el-button v-show="!isVoted" @click="vote">点赞({{moment.message.votes.length}})</el-button>
          <el-button v-show="isVoted" @click="unVote">取消点赞({{moment.message.votes.length}})</el-button>
          <el-button @click="comment">评论({{moment.message.comments.length}})</el-button>
-          <el-button @click="forward">转发({{moment.message.forwards.length}})</el-button>
+         <el-button>转发({{moment.message.forwards.length}})</el-button>
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@ export default {
   props: ['moment', 'from'],
   data() {
     return {
-      isVoted: false
+      isVoted: false,
     }
   },
   methods: {

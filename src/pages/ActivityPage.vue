@@ -41,6 +41,7 @@ export default {
   methods: {
     onModeChange() {
       this.page = 1
+      this.totalPages = 1
       this.activities = []
       this.activitiesLoading = true
       this.fetchActivities()

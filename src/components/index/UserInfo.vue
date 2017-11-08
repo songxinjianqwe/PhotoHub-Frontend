@@ -1,5 +1,5 @@
 <template>
-  <div class="user-info">
+  <div class="user-info" v-loading="loading">
     <el-form ref="user" :model="user" label-width="80px">
       <el-form-item label="用户名" prop="username">
         {{user.username}}
@@ -30,7 +30,8 @@ export default {
       tags: [],
       user: {
         tags: []
-      }
+      },
+      loading: true
     }
   },
   methods: {
@@ -61,6 +62,7 @@ export default {
             return tag.id
           })
           console.log(this.tags)
+          this.loading = false
         })
         .catch(error => {
           throw error

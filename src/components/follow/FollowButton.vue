@@ -94,11 +94,13 @@ export default {
     }
   },
   created() {
-    this.findIsFollow()
+    if (this._isLogin()) {
+      this.findIsFollow()
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

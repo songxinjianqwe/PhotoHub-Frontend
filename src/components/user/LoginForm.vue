@@ -64,7 +64,7 @@ export default {
           console.log(error)
           this.$notify.error({
             title: '登录失败',
-            message: '用户名或密码错误'
+            message: '用户名或密码错误或该用户已被封禁'
           })
         })
     },
