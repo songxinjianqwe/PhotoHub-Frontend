@@ -84,7 +84,7 @@ export default {
       console.log('上传成功')
       console.log(result.data.source_url)
       let slices = result.data.source_url.split('/')
-      let fileName = decodeURI(slices[slices.length - 1])
+      let fileName = decodeURIComponent(slices[slices.length - 1])
       console.log('fileName', fileName)
       for (let key in this.images) {
         console.log('this.images[key].name', this.images[key].name)

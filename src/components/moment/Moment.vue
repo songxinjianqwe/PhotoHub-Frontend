@@ -36,7 +36,7 @@
           {{tag.name}}
         </router-link>
       </el-tag>
-      <div v-html="compiledMarkdown"></div>
+      <div ref="markdown" v-html="compiledMarkdown"></div>
 
       <!-- 显示在首页 -->
       <div v-if=" from === 'feed' && _isLogin()">
@@ -77,7 +77,7 @@ export default {
   props: ['moment', 'from'],
   data() {
     return {
-      isVoted: false,
+      isVoted: false
     }
   },
   methods: {

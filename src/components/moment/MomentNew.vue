@@ -14,7 +14,7 @@
       </el-option>
     </el-select>
     <div class="public-btn">
-      <el-button @click="publish" type="primary">发 表</el-button>
+      <el-button :disabled="albumId === undefined"  @click="publish" type="primary">发 表</el-button>
     </div>
   </div>
 </template>
