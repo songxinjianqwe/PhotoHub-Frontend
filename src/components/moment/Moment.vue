@@ -36,7 +36,7 @@
           {{tag.name}}
         </router-link>
       </el-tag>
-      <div ref="markdown" v-html="compiledMarkdown"></div>
+      <div :class="{'markdown' : from !== 'moment-detail'}" v-html="compiledMarkdown"></div>
 
       <!-- 显示在首页 -->
       <div v-if=" from === 'feed' && _isLogin()">
@@ -47,7 +47,7 @@
       </div>
 
       <!-- 显示在用户动态页和动态详情页 -->
-      <div v-if="from === 'user-moments' || from === 'moment-detail'">
+      <div v-if="(from === 'user-moments' || from === 'moment-detail') && this._id() === moment.user.id">
         <el-button @click="edit">编辑</el-button>
         <el-button @click="remove">删除</el-button>
       </div>
@@ -203,6 +203,7 @@ export default {
   },
   computed: {
     compiledMarkdown() {
+      //将图片变成缩略图
       return Marked(this.moment.message.text, { sanitize: true })
     }
   },
@@ -220,7 +221,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style >
 .detail {
   float: right;
 }
@@ -241,5 +242,8 @@ export default {
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 10px;
+}
+.markdown img{
+  width: 250px;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="tag-left">
       <div class="tag" v-if="tag !== null">
         <h1 v-text="tag.name"></h1>
-        <tag-button :tagId="tag.id"></tag-button>
+        <tag-button  :tagId="tag.id"></tag-button>
       </div>
       <div clas="moments">
         <el-radio v-model="mode" label="hot" border @change="onModeChange">热门</el-radio>
@@ -122,8 +122,16 @@ export default {
       }
     },
     init() {
+      this.page = 1
+      this.totalPages = 1
+      this.tag =  null,
+      this.tagTalents =  [],
+      this.moments = [],
+      this.isFollow = undefined
       this.fetchTag()
-      this.checkIsFollow()
+      if(this._isLogin()){
+        this.checkIsFollow()
+      }
       this.fetchTagTalents()
       this.fetchMoments()
     }

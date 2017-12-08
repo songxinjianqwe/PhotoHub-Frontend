@@ -62,11 +62,12 @@ export default {
       let reader = new FileReader()
       reader.readAsDataURL(file)
       reader.onload = e => {
-        this.upload(this.COS_IMG_BASE_PATH, file.name, e.target.result)
+        file.storedFileName = new Date().getTime() + file.name
+        this.upload(this.COS_IMG_BASE_PATH, file.storedFileName, e.target.result)
       }
     },
     upload(cosBasePath, name, dataUrl) {
-      let path = cosBasePath + name
+      let path = cosBasePath + name 
       let binary = this.base64ToBinary(dataUrl)
       this.cos.uploadFile(
         this.uploadSuccessCallBack,
@@ -88,7 +89,7 @@ export default {
       console.log('fileName', fileName)
       for (let key in this.images) {
         console.log('this.images[key].name', this.images[key].name)
-        if (this.images[key].name === fileName) {
+        if (this.images[key].storedFileName === fileName) {
           this.text = this.text.replace(key, result.data.source_url)
         }
       }

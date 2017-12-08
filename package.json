@@ -14,6 +14,7 @@
     "element-ui": "^2.0.2",
     "mavon-editor": "^2.3.0",
     "vue": "^2.5.2",
+    "vue-croppa": "^1.1.4",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

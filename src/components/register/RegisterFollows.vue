@@ -2,7 +2,7 @@
   <div class="register-follow">
     <h3关注你喜欢的达人</h3>
     <div v-for="tag in tags" :key="tag">
-      <h3>来自标签 {{tag}}</h3>
+      <h3 v-if="tagTalents[tag].length > 0" >来自标签 {{tag}}</h3>
       <div class="user" v-for="user in tagTalents[tag]" :key="user.id">
         <span>{{user.username}}</span>
         <img :src="user.avatar" />

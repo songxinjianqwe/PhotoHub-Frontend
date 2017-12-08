@@ -106,7 +106,7 @@ export default {
       this.searchLoading = true
       let params = { keyword: this.keyword }
       this.axios
-        .get(`${this.searchOption}/search`, { params })
+        .get(`${this.searchOption}/search`, { params:params })
         .then(response => {
           console.log('搜索成功,将跳转至:', response.data)
           this.searchLoading = false

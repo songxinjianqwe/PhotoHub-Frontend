@@ -33,12 +33,12 @@ export default {
         })
     },
     unFollow() {
-      this.loading = true
       this.$confirm('此操作将不再关注此标签,是否继续?', '取关标签', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.loading = true
         this.axios
           .delete(`/tags/${this.tagId}/users/${this._id()}`)
           .then(response => {

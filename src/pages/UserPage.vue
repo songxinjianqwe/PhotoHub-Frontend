@@ -15,7 +15,7 @@
               <i class="el-icon-document"></i>
               <span slot="title">查看相册</span>
             </el-menu-item>
-            <follow-button :target="user.id"></follow-button>
+            <follow-button v-if="user.id !== undefined" :target="user.id"></follow-button>
           </el-menu>
         </div>
       </div>

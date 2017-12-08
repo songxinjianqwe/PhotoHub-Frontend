@@ -4,7 +4,7 @@
     <div v-if="activity !== null" v-html="compiledMarkdown"></div>
     <el-button v-if="_isAdmin()" @click="activityEditDialogVisible = true">编辑活动</el-button>
     <el-button v-if="_isAdmin()" @click="remove">删除活动</el-button>
-    <el-button @click="activityReplyNewDialogVisible = true">参与活动</el-button>
+    <el-button v-if="_isLogin()" @click="activityReplyNewDialogVisible = true">参与活动</el-button>
     <!-- 新增活动回复Dialog -->
     <el-dialog class="activity-reply-new" title="新增活动回复" :visible.sync="activityReplyNewDialogVisible" width="70%">
       <activity-reply-new :activity="activity" @activity-reply-new-success="onActivityReplyNewSuccess"></activity-reply-new>
